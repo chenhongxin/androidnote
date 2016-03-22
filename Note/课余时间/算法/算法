@@ -1,0 +1,14 @@
+1.冒泡模式
+int[] A = new int[]{5,2,6,7,1,3};
+int temp;
+for(int j = 0;j < A.length; j++){
+    temp = A[j];
+    for(int i = j; i < A.length; i ++){
+        if(temp < A[i]){
+            int k = A[i];
+            A[i] = temp;
+            temp = k;
+        }
+    }
+    A[j] = temp;
+}

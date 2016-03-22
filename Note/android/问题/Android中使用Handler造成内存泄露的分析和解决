@@ -1,0 +1,68 @@
+Handler 内部类持有 外部类Activity的引用，如果Activity退出而Handler还有延迟处理的消息没有处理完，会导致Activity不能回收，反复如此会导致内存泄露。
+
+解决方案一： onDestroy时清除消息，mHandler.removeCallbacksAndMessages(null); // 参数为null时会清除所有消息。
+
+解决方案二：声明Handler为static并持有Activity的弱引用。关键看程序中注释的地方
+public class MainActivity extends Activity {
+
+    private static final String tag = "MainActivity";
+
+    private TextView mTvShow;
+
+    private MyHandler mHandler;
+
+    private static final int DELAY_TIME = 10000; // set to 5s and 10s to check result.
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        mHandler = new MyHandler(MainActivity.this);
+
+        Log.e(tag, "onCreate");
+
+        mTvShow = (TextView)findViewById(R.id.tv_show);
+
+        new Thread() {
+            @Override
+            public void run() {
+
+                mHandler.sendEmptyMessageDelayed(1, DELAY_TIME);
+                Log.e(tag, "msg send");
+            }
+        }.start();
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.e(tag, "onDestroy");
+        super.onDestroy();
+    }
+
+    static class MyHandler extends Handler{
+
+        WeakReference mWeakActivity;
+
+        public MyHandler(MainActivity activity) {
+            mWeakActivity = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+
+            MainActivity activity = mWeakActivity.get();
+
+            Log.e(tag, "handleMessage," + msg.what);
+            // 5s is not null, 10s is null, tell that activity is recycled.
+            if(null == activity){
+                Log.e(tag, "null");
+            }else{
+                Log.e(tag, "not null");
+                activity.mTvShow.setText("delay show");
+            }
+        }
+    }
+}

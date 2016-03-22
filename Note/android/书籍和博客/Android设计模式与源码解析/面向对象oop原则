@@ -1,0 +1,75 @@
+面向对象oop原则：
+1.单一职责模式
+2.开闭原则
+3.里氏替换原则
+4.依赖倒置原则
+5.接口隔离原则
+6.迪米特原则
+
+1.1.单一职责模式
+类与类之间区分所在的职责
+例如：下载图片与缓存 -> ImageLoader和ImageCache
+1.2.开闭原则
+对象(类、模块、函数)应该对于扩展是开放的，但是，对于修改是封闭的。
+遵循开闭原则的重要手段应该是通过对象抽取接口让所有执行不同任务的类去继承
+例如：
+public void setImageCache(ImageCache imageCache){
+	this.imageCache = imageCache;
+}
+MemoryCache、DiskCache、DoubleCache类与自定义的缓存类
+public inteface ImageCache{
+	void put(String url, Bitmap bitmap); // 不同方式存资源
+	Bitmap get(String url); // 不同方式获取资源
+}
+1.3.里氏替换原则
+所有类都要执行同样一件事或方法可以用到抽象一个函数然后让之类去执行这件事情
+public abstract class ViewHolder {
+
+	public View getView(){
+		execute();
+	}
+	public abstract void execute();
+}
+
+new ViewHolder(){
+	public void execute(){
+		// 要执行的那件事，啪啪啪都可以
+	}
+}
+1.4.依赖倒置原则
+这个原则与开闭原则很像
+1.5.接口隔离原则
+这一原则也是为了解耦
+/**
+ * 序列化
+ * @param filename
+ * @param object
+ */
+public void oosTool(String filename, Object object){
+    ObjectOutputStream out = null;
+    try {
+        out = new ObjectOutputStream(new FileOutputStream(filename));
+        out.writeObject(object);
+    } catch (IOException e) {
+        e.printStackTrace();
+    }finally {
+        closeCloseable(out);
+    }
+}
+/**
+ * 关闭stream or reader
+ *
+ * @param closeObj
+ */
+public void closeCloseable(Closeable closeObj) {
+    try {
+        if (null != closeObj)
+            closeObj.close();
+    } catch (IOException e) {
+
+    }
+}
+1.6.迪米特原则
+指直接关系的朋友，解耦
+例如：商场购物，如果是你，你只关注在商场上的东西，你挑选商品，然后购买，
+，这就是但是商场里面的东西从何而来就是商场的员工的事情了，这就是迪米特原则

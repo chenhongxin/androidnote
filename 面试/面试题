@@ -1,0 +1,53 @@
+1.堆(heap)和栈(stack)有什么区别??
+1).heap是堆，stack是栈。
+2).stack的空间由操作系统自动分配和释放，heap的空间是手动申请和释放的，heap常用new关键字来分配。
+3).stack空间有限，heap的空间是很大的自由区。在Java中，若只是声明一个对象，则先在栈内存中为其分配地址空间，若再new一下，实例化它，则在堆内存中为其分配地址。
+4).举例：数据类型 变量名；这样定义的东西在栈区。如：Object a =null; 只在栈内存中分配空间new 数据类型();或者malloc(长度); 这样定义的东西就在堆区如：Object b =new Object(); 则在堆内存中分配空间
+
+2.谈谈final, finally, finalize的区别
+一。final
+如果一个类被声明为final，意味着它不能再派生出新的子类，不能作为父类被继承。因此一个类不能既被声明为 abstract的，又被声明为final的。将变量或方法声明为final，可以保证它们在使用中不被改变。被声明为final的变量必须在new一个对象时初始化（即只能在声明变量或构造器或代码块内初始化），而在以后的引用中只能读取，不可修改。被声明为final的方法也同样只能使用，不能覆盖(重写)。
+二。finally
+在异常处理时提供 finally 块来执行任何清除操作。如果抛出一个异常，那么相匹配的 catch 子句就会执行，然后控制就会进入 finally 块（如果有的话）。
+
+三。finalize
+方法名。Java 技术允许使用 finalize() 方法在垃圾收集器将对象从内存中清除出去之前做必要的清理工作。这个方法是由垃圾收集器在确定这个对象没有被引用时对这个对象调用的。它是在 Object 类中定义的，因此所有的类都继承了它。子类覆盖 finalize() 方法以整理系统资源或者执行其他清理工作。finalize() 方法是在垃圾收集器删除对象之前对这个对象调用的。注意：finalize不一定被jvm调用，只有当垃圾回收器要清除垃圾时才被调用。
+
+3.Android中的5种数据存储方式
+1) 使用SharedPreferences存储数据；  
+2) 文件存储数据；
+3) SQLite数据库存储数据；
+4) 使用ContentProvider存储数据；
+5) 网络存储数据；
+
+4.Activity生命周期
+1.启动Activity：系统会先调用onCreate方法，然后调用onStart方法，最后调用onResume，Activity进入运行状态。
+2.当前Activity被其他Activity覆盖其上或被锁屏：系统会调用onPause方法，暂停当前Activity的执行。
+3.当前Activity由被覆盖状态回到前台或解锁屏：系统会调用onResume方法，再次进入运行状态。
+4.当前Activity转到新的Activity界面或按Home键回到主屏，自身退居后台：系统会先调用onPause方法，然后调用onStop方法，进入停滞状态。
+5.用户后退回到此Activity：系统会先调用onRestart方法，然后调用onStart方法，最后调用onResume方法，再次进入运行状态。
+6.当前Activity处于被覆盖状态或者后台不可见状态，即第2步和第4步，系统内存不足，杀死当前Activity，而后用户退回当前Activity：再次调用onCreate方法、onStart方法、onResume方法，进入运行状态。
+7.用户退出当前Activity：系统先调用onPause方法，然后调用onStop方法，最后调用onDestory方法，结束当前Activity。
+
+5.如果后台的Activity由于某原因被系统回收了，如何在被系统回收之前保存当前状态？
+onSaveInstanceState() 当你的程序中某一个Activity A在运行时，主动或被动地运行另一个新的Activity B，这个时候A会执行onSaveInstanceState()。B完成以后又会来找A，
+这个时候就有两种情况：一是A被回收，二是A没有被回收，被回收的A就要重新调用onCreate()方法，不同于直接启动的是这回onCreate()里是带上了参数savedInstanceState；而没被收回的就直接执行onResume()，跳过onCreate()了。
+ 另外,刚才查看了一下Activity的源码,发现Activity还有个onRestoreInstanceState(Bundle outState)方法.这个方法的描述中也写到在Activity回复先前保存的状态时会被调用.
+
+6.流行框架
+Kotlin、react-native
+
+7.请介绍下Android中常用的五种布局
+常用五种布局方式，分别是：FrameLayout（框架布局），LinearLayout （线性布局），AbsoluteLayout（绝对布局），RelativeLayout（相对布局），TableLayout（表格布局）
+
+8.handler机制的原理
+1)Looper: 一个线程可以产生一个Looper对象，由它来管理此线程里的MessageQueue(消息队列)。 
+2)Handler: 你可以构造Handler对象来与Looper沟通，以便push新消息到MessageQueue里;或者接收Looper从Message Queue取出)所送来的消息。
+3) Message Queue(消息队列):用来存放线程放入的消息。 
+4)线程：UIthread 通常就是main thread，而Android启动程序时会替它建立一个MessageQueue。
+
+
+
+
+
+

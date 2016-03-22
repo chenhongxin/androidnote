@@ -1,0 +1,966 @@
+单例模式：
+1.简单单例模式
+2.懒汉模式
+3.DCL模式(线程安全)
+4.静态内部类单例模式
+5.枚举单例
+6.使用容器实现单例模式
+
+1.简单单例模式：
+private static final Object instance = new Object();
+private Object(){
+	
+}
+public static Object getInstance(){
+	return instance;
+}
+2.懒汉模式：
+private static Object instance;
+private Object(){
+	
+}
+public static synchronized Object getInstance(){
+	if(instance == null){
+		instance = new Object();
+	}
+}
+3.DCL模式(线程安全)：
+private static Object instance;
+private Object(){
+	
+}
+public static Object getInstance(){
+	if(instance == null){
+		synchronized(this){
+			if(instance == null){
+				instance = new Object();
+			}
+		}
+	}
+}
+4.静态内部类单例模式
+private Object(){
+	
+}
+public static Object getInstance{
+	return ObjectHolder.instance;
+}
+private static class ObjectHolder {
+	private static final Object instance = new Object();
+}
+5.枚举单例
+public enum singletonEnum {
+	INSTANCE;
+}
+6.使用容器实现单例模式
+private static Map<String, Object> objMap = new HashMap<String, Object>();
+public static void registerService(String key, Object instance){
+	if(!objMap.containsKey(key)){
+		objMap.put(key, instance);
+	}
+}
+public static Object getService(String key){
+	return objMap.get(key);
+}
+
+Android源码中的单例模式
+在读源码之前建议先看看鸿洋的setContentView源码解析，牛人一个，哈哈：http://blog.csdn.net/lmj623565791/article/details/41894125
+然后可以再深入看看这篇博客：http://www.xuebuyuan.com/1913781.html，感觉吊吊的，好了，我们切入主题吧！
+1.LayoutInflater.from(context); // 获取LayoutInflater对象
+解析：内部通过context的getSystemService获取LayoutInflater
+public static LayoutInflater from(Context context){
+	LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	if(layoutInflater == null) // 加载文件失败抛AssertionError找不到布局异常
+	return layoutInflater;
+}
+Context是一个抽象类让我意外，如果Context是抽象类，那么底层是谁继承了它呢，然后在actiivty调用的是谁呢？
+先看ActivityThread类
+ActivityThread是一个主入口
+public static void main(String[] args) {
+ 	Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "ActivityThreadMain");
+    SamplingProfilerIntegration.start();
+
+    CloseGuard.setEnabled(false);
+
+    Environment.initForCurrentUser();
+
+    // Set the reporter for event logging in libcore
+    EventLogger.setReporter(new EventLoggingReporter());
+
+    AndroidKeyStoreProvider.install();
+
+    // Make sure TrustedCertificateStore looks in the right place for CA certificates
+    final File configDir = Environment.getUserConfigDirectory(UserHandle.myUserId());
+    TrustedCertificateStore.setDefaultUserDirectory(configDir);
+
+    Process.setArgV0("<pre-initialized>");
+
+    Looper.prepareMainLooper();
+
+    ActivityThread thread = new ActivityThread();
+    thread.attach(false);
+
+    if (sMainThreadHandler == null) {
+        sMainThreadHandler = thread.getHandler();
+    }
+
+    if (false) {
+        Looper.myLooper().setMessageLogging(new
+                LogPrinter(Log.DEBUG, "ActivityThread"));
+    }
+
+    // End of event ActivityThreadMain.
+    Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
+    Looper.loop();
+
+    throw new RuntimeException("Main thread loop unexpectedly exited");
+}
+可以看出ActivityThread是一个程序的主入口，由Looper.prepareMainLooper()和Looper.loop()进入无线循环操作
+第二点我们可以看到
+ActivityThread thread = new ActivityThread();
+thread.attach(false);
+调用了attach方法
+private void attach(boolean system) {
+	  sCurrentActivityThread = this;
+        mSystemThread = system;
+        if (!system) {
+            ViewRootImpl.addFirstDrawHandler(new Runnable() {
+                @Override
+                public void run() {
+                    ensureJitEnabled();
+                }
+            });
+            android.ddm.DdmHandleAppName.setAppName("<pre-initialized>",
+                                                    UserHandle.myUserId());
+            RuntimeInit.setApplicationObject(mAppThread.asBinder());
+            final IActivityManager mgr = ActivityManagerNative.getDefault();
+            try {
+                mgr.attachApplication(mAppThread);
+            } catch (RemoteException ex) {
+                // Ignore
+            }
+            // Watch for getting close to heap limit.
+            BinderInternal.addGcWatcher(new Runnable() {
+                @Override public void run() {
+                    if (!mSomeActivitiesChanged) {
+                        return;
+                    }
+                    Runtime runtime = Runtime.getRuntime();
+                    long dalvikMax = runtime.maxMemory();
+                    long dalvikUsed = runtime.totalMemory() - runtime.freeMemory();
+                    if (dalvikUsed > ((3*dalvikMax)/4)) {
+                        if (DEBUG_MEMORY_TRIM) Slog.d(TAG, "Dalvik max=" + (dalvikMax/1024)
+                                + " total=" + (runtime.totalMemory()/1024)
+                                + " used=" + (dalvikUsed/1024));
+                        mSomeActivitiesChanged = false;
+                        try {
+                            mgr.releaseSomeActivities(mAppThread);
+                        } catch (RemoteException e) {
+                        }
+                    }
+                }
+            });
+        } else {
+        	// 省略
+        }
+}
+mAppThread通过Binder机制与ActivityManagerService进行IPC通信，然后调用handleLaunchActivity函数
+在handleLaunchActivity获取Activity并通过mInstrumentation.callActivityOnCreate(activity, r.state)执行onCreate方法
+if (r.isPersistable()) {
+    mInstrumentation.callActivityOnCreate(activity, r.state, r.persistentState);
+} else {
+    mInstrumentation.callActivityOnCreate(activity, r.state);
+}
+判断如果保存persistentState就把persistentState传过去
+在performLaunchActivity函数通过反射，mInstrumentation调用newActivity加载创建Activity实例
+然后通过ActivityClientRecord的packageInfo调用makeApplication创建Application对象
+接下来通过activity和ActivityClientRecord获取Context对象
+最后把Context、Application、标题之类的跟Activity有关的对象传给activity并保存这些对象
+具体内容为：下面是重要的信息
+Activity activity = null;
+try {
+    java.lang.ClassLoader cl = r.packageInfo.getClassLoader();
+    activity = mInstrumentation.newActivity(
+            cl, component.getClassName(), r.intent);
+    StrictMode.incrementExpectedActivityCount(activity.getClass());
+    r.intent.setExtrasClassLoader(cl);
+    r.intent.prepareToEnterProcess();
+    if (r.state != null) {
+        r.state.setClassLoader(cl);
+    }
+} 
+ Application app = r.packageInfo.makeApplication(false, mInstrumentation);
+if (activity != null) {
+	Context appContext = createBaseContextForActivity(r, activity);
+	CharSequence title = r.activityInfo.loadLabel(appContext.getPackageManager());
+	Configuration config = new Configuration(mCompatConfiguration);
+	activity.attach(appContext, this, getInstrumentation(), r.token,
+	        r.ident, app, r.intent, r.activityInfo, title, r.parent,
+	        r.embeddedID, r.lastNonConfigurationInstances, config,
+	        r.referrer, r.voiceInteractor);
+}
+ if (r.isPersistable()) {
+    mInstrumentation.callActivityOnCreate(activity, r.state, r.persistentState);
+} else {
+    mInstrumentation.callActivityOnCreate(activity, r.state);
+}
+在源代码中我们可以看到Context是通过createBaseContextForActivity方法获取Context上下文的
+ContextImpl appContext = ContextImpl.createActivityContext(this, r.packageInfo, displayId, r.overrideConfig);
+通过ContextImpl类获取Context，从这里我们可以看出Context的具体类原来是ContextImpl
+通过appContext.setOuterContext(activity);设置ContextImpl与Activity绑定
+然后通过设置Context baseContext = appContext;将baseContext传给Activity
+private Context createBaseContextForActivity(ActivityClientRecord r, final Activity activity) {
+	ContextImpl appContext = ContextImpl.createActivityContext(this, r.packageInfo, displayId, r.overrideConfig);
+    appContext.setOuterContext(activity);
+    Context baseContext = appContext;
+    return baseContext;
+}
+接下来我们看看ContextImpl这个神秘的类，居然被抽象了
+里面就有个ServiceFetcher类主要做get和create就像工厂一样，创建对象和重载对象
+static class ServiceFetcher {
+    int mContextCacheIndex = -1;
+
+    public Object getService(ContextImpl ctx) {
+        ArrayList<Object> cache = ctx.mServiceCache;
+        Object service;
+        synchronized (cache) {
+            if (cache.size() == 0) {
+                for (int i = 0; i < sNextPerContextServiceCacheIndex; i++) {
+                    cache.add(null);
+                }
+            } else {
+                service = cache.get(mContextCacheIndex);
+                if (service != null) {
+                    return service;
+                }
+            }
+            service = createService(ctx);
+            cache.set(mContextCacheIndex, service);
+            return service;
+        }
+    }
+
+    public Object createService(ContextImpl ctx) {
+        throw new RuntimeException("Not implemented");
+    }
+}
+// 缓存的service索引
+private static int sNextPerContextServiceCacheIndex = 0;  
+private static void registerService(String serviceName, ServiceFetcher fetcher) {  
+   if (!(fetcher instanceof StaticServiceFetcher)) {  
+       fetcher.mContextCacheIndex = sNextPerContextServiceCacheIndex++;  
+   }  
+   SYSTEM_SERVICE_MAP.put(serviceName, fetcher);  
+}
+
+private static final HashMap<String, ServiceFetcher> SYSTEM_SERVICE_MAP =  new HashMap<String, ServiceFetcher>(); 
+
+static {
+	// 通过这个注册LAYOUT_INFLATER_SERVICE，在PolicyManager的makeNewLayoutInflater函数创建LayoutInflater
+	registerService(LAYOUT_INFLATER_SERVICE, new ServiceFetcher() {
+    public Object createService(ContextImpl ctx) {
+        return PolicyManager.makeNewLayoutInflater(ctx.getOuterContext());
+    }});
+}
+// 通过这个方法我们可以获取到service
+public Object getSystemService(String name) {
+    ServiceFetcher fetcher = SYSTEM_SERVICE_MAP.get(name);
+    return fetcher == null ? null : fetcher.getService(this);
+}
+
+总结(Note)：
+从上文的主入口开始，一个界面Activity运行是通过Looper进行循环，通过attach方法里面的
+ApplicationThread的asBinder进行通信处理handlerLunchActivity函数，在handlerLunchActivity调用
+performLaunchActivity函数进行初始化Activity，Appllication，Context(这三个是主要的)，然后将这些对象传给Activity进行保存
+在ContextImpl类中创建了一个ServiceFatcher类，包含了getService和createService，在ContextImpl中调用registerService这个方法进行注册service
+private static void registerService(String serviceName, ServiceFetcher fetcher) {  
+   if (!(fetcher instanceof StaticServiceFetcher)) {  
+       fetcher.mContextCacheIndex = sNextPerContextServiceCacheIndex++;  
+   }  
+   SYSTEM_SERVICE_MAP.put(serviceName, fetcher);  
+}
+用单例模式将service对象保存
+这里有个单例模式 => 6.使用容器实现单例模式
+private static final HashMap<String, ServiceFetcher> SYSTEM_SERVICE_MAP =  new HashMap<String, ServiceFetcher>();
+private static void registerService(String serviceName, ServiceFetcher fetcher) {  
+   if (!(fetcher instanceof StaticServiceFetcher)) {  
+       fetcher.mContextCacheIndex = sNextPerContextServiceCacheIndex++;  
+   }  
+   SYSTEM_SERVICE_MAP.put(serviceName, fetcher);  
+}
+public Object getSystemService(String name) {
+    ServiceFetcher fetcher = SYSTEM_SERVICE_MAP.get(name);
+    return fetcher == null ? null : fetcher.getService(this);
+}
+SYSTEM_SERVICE_MAP => HashMap
+registerService -> 注册service
+getSystemService -> 获取service
+
+
+到这里完了？还没有哦！我们再深入了解一下LayoutInflater，我们在前面其实有说到了，ContextImpl被创建时会注册service
+static {
+	// 通过这个注册LAYOUT_INFLATER_SERVICE，在PolicyManager的makeNewLayoutInflater函数创建LayoutInflater
+	registerService(LAYOUT_INFLATER_SERVICE, new ServiceFetcher() {
+    public Object createService(ContextImpl ctx) {
+        return PolicyManager.makeNewLayoutInflater(ctx.getOuterContext());
+    }});
+}
+我们以前都会用一个Context的静态字段LAYOUT_INFLATER_SERVICE去获取LayoutInflater，这里就是创建LayoutInflater对象的
+// 通过这个方法我们可以获取到service
+public Object getSystemService(String name) {
+    ServiceFetcher fetcher = SYSTEM_SERVICE_MAP.get(name);
+    return fetcher == null ? null : fetcher.getService(this);
+}
+但是我们去看看LayoutInflater
+public abstract class LayoutInflater {
+
+}
+发现他是抽象的，那么具体的LayoutInflater呢？我们返回头来看PolicyManager.makeNewLayoutInflater(ctx.getOuterContext())去创建LayoutInflater的
+那么，我们带着疑问去看看PolicyManager这个类
+public final class PolicyManager {
+private static final String POLICY_IMPL_CLASS_NAME =
+         "com.android.internal.policy.impl.Policy";
+ 
+	 private static final IPolicy sPolicy;
+
+	 static {
+	    // 运行时动态装载IPolicy实现类 
+	     try {
+	        //加载Policy类的同时会执行其中的静态代码段 
+	         Class policyClass = Class.forName(POLICY_IMPL_CLASS_NAME);
+	         sPolicy = (IPolicy)policyClass.newInstance();
+	     } catch (ClassNotFoundException ex) {
+	         throw new RuntimeException(
+	                 POLICY_IMPL_CLASS_NAME + " could not be loaded", ex);
+	     } catch (InstantiationException ex) {
+	         throw new RuntimeException(
+	                 POLICY_IMPL_CLASS_NAME + " could not be instantiated", ex);
+	     } catch (IllegalAccessException ex) {
+	         throw new RuntimeException(
+	                 POLICY_IMPL_CLASS_NAME + " could not be instantiated", ex);
+	     }
+	 }
+
+	 // 构造函数私有，保证是单例类 
+	 private PolicyManager() {}
+
+	 // The static methods to spawn new policy-specific objects 
+	 public static Window makeNewWindow(Context context) {
+	     return sPolicy.makeNewWindow(context);
+	 }
+
+	 public static LayoutInflater makeNewLayoutInflater(Context context) {
+	     return sPolicy.makeNewLayoutInflater(context);
+	 }
+
+	 public static WindowManagerPolicy makeNewWindowManager() {
+	     return sPolicy.makeNewWindowManager();
+	 }
+}
+在这个类中我们可以看出makeNewLayoutInflater这个方法是由sPolicy.makeNewLayoutInflater(context);这里创建一个LayoutInflater的，哇，
+一个LayoutInflater放得这么深入，好吧，我们发现创建LayoutInflater是由IPolicy这个接口创建的，喔，是接口哦，是用多态实现的，那底层是谁呢，
+我们看到上面static里面实例化IPolicy这个接口是通过反射的
+private static final String POLICY_IMPL_CLASS_NAME = "com.android.internal.policy.impl.Policy";
+哟，找到了是Policy，找了这么久还是要继续深研，好吧，我们再看看Policy这个类是何方神圣
+public class Policy implements IPolicy {
+     private static final String TAG = "PhonePolicy";
+ 
+     //需要在Policy类创建时预先加载的一些类 
+     private static final String[] preload_classes = {
+         "com.android.internal.policy.impl.PhoneLayoutInflater",
+         "com.android.internal.policy.impl.PhoneWindow",
+         "com.android.internal.policy.impl.PhoneWindow$1",
+         "com.android.internal.policy.impl.PhoneWindow$ContextMenuCallback",
+         "com.android.internal.policy.impl.PhoneWindow$DecorView",
+         "com.android.internal.policy.impl.PhoneWindow$PanelFeatureState",
+  "com.android.internal.policy.impl.PhoneWindow$PanelFeatureState$SavedState",
+     };
+ 
+     static {
+         // 出于性能考虑，在Policy类加载时提前加载会用到的相关类 
+         for (String s : preload_classes) {
+             try {
+         //加载指定类到Java虚拟机中，并执行类中的静态代码段 
+                 Class.forName(s);
+             } catch (ClassNotFoundException ex) {
+                 Log.e(TAG, "Could not preload class for phone policy: " + s);
+             }
+         }
+     }
+ 
+ 	 // 创建PhoneWindow对象
+     public PhoneWindow makeNewWindow(Context context) {
+         return new PhoneWindow(context);
+     }
+ 
+ 	 // 创建PhoneLayoutInflater对象
+     public PhoneLayoutInflater makeNewLayoutInflater(Context context) {
+         return new PhoneLayoutInflater(context);
+     }
+ 
+     //PhoneWindowManager实现了WindowManagerPolicy接口     
+     //这里返回值直接写成WindowManagerPolicy更合理些 
+     // 创建PhoneWindowManager对象
+     public PhoneWindowManager makeNewWindowManager() {
+         return new PhoneWindowManager();
+     }
+ }
+卧槽，找到了，原来是PhoneLayoutInflater这家伙，不过在这里我们却发现一个新玩意PhoneWindow，这家伙是干什么的
+之前有一个图让我联想，不过他是什么我们后面再研究，先把LayoutInflater整个流程弄清楚了再说，既然是PhoneLayoutInflater
+那么我们来看看PhoneLayoutInflater这个类
+public class PhoneLayoutInflater extends LayoutInflater {
+	private static final String[] sClassPrefixList = {
+		"android.widget.",
+		"android.webkit."
+	};
+
+	public PhoneLayoutInflater(Context context) {
+        super(context);
+    }
+   
+    protected PhoneLayoutInflater(LayoutInflater original, Context newContext) {
+        super(original, newContext);
+    }
+
+	@Override
+	protected View onCreateView(String name, AttributeSet attrs) throws ClassNotFoundException {
+        for (String prefix : sClassPrefixList) {
+            try {
+                View view = createView(name, prefix, attrs);
+                if (view != null) {
+                    return view;
+                }
+            } catch (ClassNotFoundException e) {
+                // In this case we want to let the base class take a crack
+                // at it.
+            }
+        }
+
+        return super.onCreateView(name, attrs);
+    }
+
+    public LayoutInflater cloneInContext(Context newContext) {
+        return new PhoneLayoutInflater(this, newContext);
+    }
+}
+这个类就强大了，createView，你所有的view必须经过这个类，onCreateView这个方法遍历sClassPrefixList这个string数组
+然后进行createView
+
+下面是createView函数：
+ public final View createView(String name, String prefix, AttributeSet attrs)
+            throws ClassNotFoundException, InflateException {
+    // 1.从缓存的构造函数获取View的构造函数
+    Constructor<? extends View> constructor = sConstructorMap.get(name);
+    Class<? extends View> clazz = null;
+
+    try {
+        Trace.traceBegin(Trace.TRACE_TAG_VIEW, name);
+
+        // 2.如果没有缓存过就进行创建并缓存
+        if (constructor == null) {
+            // Class not found in the cache, see if it's real, and try to add it
+            clazz = mContext.getClassLoader().loadClass(
+                    prefix != null ? (prefix + name) : name).asSubclass(View.class);
+            
+            if (mFilter != null && clazz != null) {
+                boolean allowed = mFilter.onLoadClass(clazz);
+                if (!allowed) {
+                    failNotAllowed(name, prefix, attrs);
+                }
+            }
+            // 3.通过Class[]对象中获取构造函数
+            constructor = clazz.getConstructor(mConstructorSignature);
+            constructor.setAccessible(true);
+            // 4.缓存构造函数
+            sConstructorMap.put(name, constructor);
+        } else {
+            // 代码省略
+        }
+
+        Object[] args = mConstructorArgs;
+        args[1] = attrs;
+
+        // 5.通过反射构造view对象
+        final View view = constructor.newInstance(args);
+        if (view instanceof ViewStub) {
+            // Use the same context when inflating ViewStub later.
+            final ViewStub viewStub = (ViewStub) view;
+            viewStub.setLayoutInflater(cloneInContext((Context) args[0]));
+        }
+        return view;
+
+    }
+   	// 省略各种catch
+}
+
+从这个类中我们就可以看到两个单例模式
+// 1.简单单例模式：
+static final Class<?>[] mConstructorSignature = new Class[] {
+            Context.class, AttributeSet.class};
+// 6.使用容器实现单例模式：
+private static final HashMap<String, Constructor<? extends View>> sConstructorMap =
+    new HashMap<String, Constructor<? extends View>>();
+
+既然PhoneLayoutInflater可以拿来创建View，那么我们在哪里会执行创建view呢？好吧，你牛，我们回到最原始的
+setContentView(layoutId);从这里开始
+这么说我们就知道为什么我们可以getWindow来设置setContentView了吧
+如果你不知道你可以了解一个activity的具体结构，activity是由
+PhoneWindow->DecorView->Default Layout->ViewGoup(mContentParent)->layoutId(自己自定义的局部)
+由这个结构我们可以解释为啥可以由getWindow来创建一棵树来显示到界面了吧，这里的getWindow其实就是PhoneWindow这条树根来的，
+在PhoneLayoutInflater中我们就已经可以看出：makePhoneWindow() -> 创建PhoneWindow实例
+好了，我们进入setContentView方法看看他是怎么做的
+@Override  
+public void setContentView(int layoutResID) {  
+   if (mContentParent == null) {  
+       installDecor();  
+   } else {  
+       mContentParent.removeAllViews();  
+   }  
+   mLayoutInflater.inflate(layoutResID, mContentParent);  
+   final Callback cb = getCallback();  
+   if (cb != null && !isDestroyed()) {  
+       cb.onContentChanged();  
+   }  
+}
+我们可以看出最终会把我们设置的xml设置至mContentParent中，不过，在此之前，系统进行了判断mContentParent是null，
+哟，好戏，这场戏唱得挺好的，不信你随我来看看他里面是怎么做的。。。
+首先，判断如果mContentParent是null就执行installDecor函数，这个函数一看就是装载Decor并获取mContentParent的，上面我有说了activity的组成
+那么DecorView它是怎么组成的呢？
+private void installDecor() {  
+    if (mDecor == null) {  
+        mDecor = generateDecor();  
+        mDecor.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);  
+        mDecor.setIsRootNamespace(true);  
+        //...  
+        }  
+    }  
+    if (mContentParent == null) {  
+        mContentParent = generateLayout(mDecor);  
+        mTitleView = (TextView)findViewById(com.android.internal.R.id.title);  
+        if (mTitleView != null) {  
+           //根据FEATURE_NO_TITLE隐藏，或者设置mTitleView的值  
+            //...  
+        } else {  
+            mActionBar = (ActionBarView) findViewById(com.android.internal.R.id.action_bar);  
+            if (mActionBar != null) {  
+                //设置ActionBar标题、图标神马的；根据FEATURE初始化Actionbar的一些显示  
+                //...
+            }  
+        }  
+    }  
+}
+呵呵，首先生成DecorView，其实我们也知道，mContentParent是属于DecorView的，然后从DecorView获取mContentParent
+然后再获取title，判断其是否为空，有意思，这个title是谁，我们在setContentView还记不记得有设置过FEATURE_NO_TITLE
+让title隐藏，哈哈，这个就是了，还分了actionBar，呼呼，既然如此，那么title肯定是由上面两份view来的，我们首先来看看
+mDecor这个是怎么生成的呢，我们先来看看generateLayout这个函数：
+PhoneWindow -> generateDecor
+protected DecorView generateDecor() {  
+    return new DecorView(getContext(), -1);  
+}
+public DecorView(Context context, int featureId) {  
+    super(context);
+    mFeatureId = featureId;
+}
+很遗憾，我们的generateDecor（）只是初始化了一个FrameLayout对象，并没有在其内部压入布局文件，我以为他是有inflate布局的！被他名字给骗了
+好吧，既然不是DecorView它生成的，那么应该是在生成mContentParent的同时生成了的，我们带着疑问看看底层是怎么做的：
+PhoneWindow -> generateLayout
+protected ViewGroup generateLayout(DecorView decor) {  
+            // Apply data from current theme.  
+            TypedArray a = getWindowStyle();  
+            //...Window_windowIsFloating,Window_windowNoTitle，Window_windowActionBar...  
+            //首先通过WindowStyle中设置的各种属性，对Window进行requestFeature或者setFlags  
+
+            if (a.getBoolean(com.android.internal.R.styleable.Window_windowNoTitle, false)) {  
+                requestFeature(FEATURE_NO_TITLE);  
+            }
+            //...  
+            if (a.getBoolean(com.android.internal.R.styleable.Window_windowFullscreen, false)) {  
+                setFlags(FLAG_FULLSCREEN, FLAG_FULLSCREEN & (~getForcedWindowFlags()));  
+            }  
+            //...根据当前sdk的版本确定是否需要menukey  
+            WindowManager.LayoutParams params = getAttributes();  
+            //通过a中设置的属性，设置  params.softInputMode 软键盘的模式；  
+            //如果当前是浮动Activity，在params中设置FLAG_DIM_BEHIND并记录dimAmount的值。  
+            //以及在params.windowAnimations记录WindowAnimationStyle  
+              
+            // Inflate the window decor.  
+            int layoutResource;  
+            int features = getLocalFeatures();  
+            // System.out.println("Features: 0x" + Integer.toHexString(features));  
+            if ((features & ((1 << FEATURE_LEFT_ICON) | (1 << FEATURE_RIGHT_ICON))) != 0) {  
+                if (mIsFloating) {  
+                    TypedValue res = new TypedValue();  
+                    getContext().getTheme().resolveAttribute(  
+                            com.android.internal.R.attr.dialogTitleIconsDecorLayout, res, true);  
+                    layoutResource = res.resourceId;  
+                } else {  
+                    layoutResource = com.android.internal.R.layout.screen_title_icons;  
+                }  
+                // XXX Remove this once action bar supports these features.  
+                removeFeature(FEATURE_ACTION_BAR);  
+                // System.out.println("Title Icons!");  
+            } else if ((features & ((1 << FEATURE_PROGRESS) | (1 << FEATURE_INDETERMINATE_PROGRESS))) != 0  
+                    && (features & (1 << FEATURE_ACTION_BAR)) == 0) {  
+                // Special case for a window with only a progress bar (and title).  
+                // XXX Need to have a no-title version of embedded windows.  
+                layoutResource = com.android.internal.R.layout.screen_progress;  
+                // System.out.println("Progress!");  
+            } else if ((features & (1 << FEATURE_CUSTOM_TITLE)) != 0) {  
+                // Special case for a window with a custom title.  
+                // If the window is floating, we need a dialog layout  
+                if (mIsFloating) {  
+                    TypedValue res = new TypedValue();  
+                    getContext().getTheme().resolveAttribute(  
+                            com.android.internal.R.attr.dialogCustomTitleDecorLayout, res, true);  
+                    layoutResource = res.resourceId;  
+                } else {  
+                    layoutResource = com.android.internal.R.layout.screen_custom_title;  
+                }  
+                // XXX Remove this once action bar supports these features.  
+                removeFeature(FEATURE_ACTION_BAR);  
+            } else if ((features & (1 << FEATURE_NO_TITLE)) == 0) {  
+                // If no other features and not embedded, only need a title.  
+                // If the window is floating, we need a dialog layout  
+                if (mIsFloating) {  
+                    TypedValue res = new TypedValue();  
+                    getContext().getTheme().resolveAttribute(  
+                            com.android.internal.R.attr.dialogTitleDecorLayout, res, true);  
+                    layoutResource = res.resourceId;  
+                } else if ((features & (1 << FEATURE_ACTION_BAR)) != 0) {  
+                    layoutResource = com.android.internal.R.layout.screen_action_bar;  
+                } else {  
+                    layoutResource = com.android.internal.R.layout.screen_title;  
+                }  
+                // System.out.println("Title!");  
+            } else if ((features & (1 << FEATURE_ACTION_MODE_OVERLAY)) != 0) {  
+                layoutResource = com.android.internal.R.layout.screen_simple_overlay_action_mode;  
+            } else {  
+                // Embedded, so no decoration is needed.  
+                layoutResource = com.android.internal.R.layout.screen_simple;  
+                // System.out.println("Simple!");  
+            }  
+      
+      
+            View in = mLayoutInflater.inflate(layoutResource, null);  
+            decor.addView(in, new ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT));  
+      
+            ViewGroup contentParent = (ViewGroup)findViewById(ID_ANDROID_CONTENT);  
+            //...  
+      
+            return contentParent;  
+        }  
+}
+找到了，找到了，好激动。不过这个函数挺长的，由于它要做获取一个resourceId，然后用Inflate填充一个view，所以内容是比较多，好吧，我们先看看
+Window的theme中获取我们的Window中定义的属性，具体路径：\frameworks\base\core\res\res\values\attrs.xml
+<declare-styleable name="Window">  
+	   <attr name="windowBackground" />  
+	   <attr name="windowContentOverlay" />  
+	   <attr name="windowFrame" />  
+	   <attr name="windowNoTitle" />  
+	   <attr name="windowFullscreen" />  
+	   <attr name="windowOverscan" />  
+	   <attr name="windowIsFloating" />  
+	   <attr name="windowIsTranslucent" />  
+	   <attr name="windowShowWallpaper" />  
+	   <attr name="windowAnimationStyle" />  
+	   <attr name="windowSoftInputMode" />  
+	   <attr name="windowDisablePreview" />  
+	   <attr name="windowNoDisplay" />  
+	   <attr name="textColor" />  
+	   <attr name="backgroundDimEnabled" />  
+	   <attr name="backgroundDimAmount" />
+</declare-styleable>
+之前我们设置的requestFeature,setFlags原来是它哟，这个属性主要是做设置Theme主题的
+我们generateLayout(DecorView decor)这个函数看到从定义resourceId到最后inflater一个view的过程都是在初始化resourceId，
+至于值可以为R.layout.screen_custom_title;R.layout.screen_action_bar;等等。至于features，除了theme中设置的，我们也可以在Activity的onCreate的setContentView之前进行requestFeature，也解释了，为什么需要在setContentView前调用requestFeature设置全屏什么的。
+最后将初始化的resourceId来inflate一个view了，并且将view添加至decorView中，这样Activity的组成就多了一个了。
+接下来我们来看看screen_custom_title这个布局，看看它是何方神圣，我们之前也说了title，那么title是从何而来的呢？
+R.layout.screen_custom_title.xml
+<?xml version="1.0" encoding="utf-8"?>  
+<!-- 
+This is a custom layout for a screen. 
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"  
+    android:orientation="vertical"  
+    android:fitsSystemWindows="true">  
+    <!-- Popout bar for action modes -->  
+    <ViewStub android:id="@+id/action_mode_bar_stub"  
+              android:inflatedId="@+id/action_mode_bar"  
+              android:layout="@layout/action_mode_bar"  
+              android:layout_width="match_parent"  
+              android:layout_height="wrap_content" />  
+  
+    <FrameLayout android:id="@android:id/title_container"   
+        android:layout_width="match_parent"   
+        android:layout_height="?android:attr/windowTitleSize"  
+        style="?android:attr/windowTitleBackgroundStyle">  
+    </FrameLayout>  
+    <FrameLayout android:id="@android:id/content"  
+        android:layout_width="match_parent"   
+        android:layout_height="0dip"  
+        android:layout_weight="1"  
+        android:foregroundGravity="fill_horizontal|top"  
+        android:foreground="?android:attr/windowContentOverlay" />  
+</LinearLayout>
+哟，有一个title_container和content的frameLayout布局，这个title_container就是我们的title了，content就是我们的setContentView的layoutId了
+从上由下我们解析了setContentView的整个流程，不过到此还没有完！
+
+我们先总结：
+首先初始化mDecor,即DecorView为FrameLayout的子类。就是我们整个窗口的根视图了。
+然后，根据theme中的属性值，选择合适的布局，通过infalter.inflater放入到我们的mDecor中。
+在这些布局中，一般会包含ActionBar，Title，和一个id为content的FrameLayout。
+最后，我们在Activity中设置的布局，会通过infalter.inflater压入到我们的id为content的FrameLayout中去。
+
+接下来我们来看看内部如何填充一个xml布局的，上面我们只是解释一个activity的组成.
+我们先来看看inflate这个函数：
+public View inflate(XmlPullParser parser, ViewGroup root, boolean attachToRoot) {  
+    synchronized (mConstructorArgs) {  
+        final AttributeSet attrs = Xml.asAttributeSet(parser);  
+        mConstructorArgs[0] = mContext;  
+        View result = root;  
+        try {  
+            int type;  
+            while ((type = parser.next()) != XmlPullParser.START_TAG &&  
+                    type != XmlPullParser.END_DOCUMENT) {  
+            }  
+            if (type != XmlPullParser.START_TAG) {  
+                throw new InflateException(parser.getPositionDescription()  
+                        + ": No start tag found!");  
+            }  
+            final String name = parser.getName();
+            // 1.解析merge标签
+            if (TAG_MERGE.equals(name)) {  
+                if (root == null || !attachToRoot) {  
+                    throw new InflateException("merge can be used only with a valid "  
+                            + "ViewGroup root and attachToRoot=true");
+                }
+                rInflate(parser, root, attrs);  
+            } else {  
+            	// 2.非merge标签，有两种可能，第一种用系统的，第二种用自定义控件实现布局
+                View temp = createViewFromTag(name, attrs);  
+                ViewGroup.LayoutParams params = null;  
+                if (root != null) {  
+                    params = root.generateLayoutParams(attrs);  
+                    if (!attachToRoot) {  
+                        temp.setLayoutParams(params);  
+                    }  
+                } 
+                // 3.将第一个标签解析完成后解析childView
+                rInflate(parser, temp, attrs);  
+                if (root != null && attachToRoot) {
+                    root.addView(temp, params);
+                }  
+                if (root == null || !attachToRoot) {  
+                    result = temp;
+                }
+            }  
+        } 
+        // ....
+        return result;  
+    }  
+}
+还记得我们在使用listview的使用要获取一个View的时候是怎么使用的？没错，上面就是那个函数。
+
+当解析完第一节点后解析childView所有节点
+void rInflate(XmlPullParser parser, View parent, final AttributeSet attrs, boolean finishInflate) throws XmlPullParserException, IOException {
+		// 1,获取树的深度，深度优先遍历
+		final int depth = parser.getDepth();
+		int type;
+		// 1.迭代xml中的所有元素，挨个解析
+		while (((type = parser.next()) != XmlPullParser.END_TAG ||
+		parser.getDepth() > depth) && type != XmlPullParser.END_DOCUMENT) {
+		 
+			if (type != XmlPullParser.START_TAG) {
+				continue;
+			}
+			 
+			final String name = parser.getName();
+			 
+			if (TAG_REQUEST_FOCUS.equals(name)) {
+				parseRequestFocus(parser, parent);
+			} else if (TAG_INCLUDE.equals(name)) {// 如果xml中的节点是include节点，则调用parseInclude方法
+			if (parser.getDepth() == 0) {
+				throw new InflateException( cannot be the root element);
+			}
+			parseInclude(parser, parent, attrs);
+			} else if (TAG_MERGE.equals(name)) { // childView不能包含merge标签，不然抛异常
+				throw new InflateException( must be the root element);
+			} else if (TAG_1995.equals(name)) { // 闪烁视图
+				final View view = new BlinkLayout(mContext, attrs);
+				final ViewGroup viewGroup = (ViewGroup) parent;
+				final ViewGroup.LayoutParams params = viewGroup.generateLayoutParams(attrs);
+				rInflate(parser, view, attrs, true);
+				viewGroup.addView(view, params);
+			} else {
+				// 3.根据元素名进行解析
+				final View view = createViewFromTag(parent, name, attrs);
+				final ViewGroup viewGroup = (ViewGroup) parent;
+				final ViewGroup.LayoutParams params = viewGroup.generateLayoutParams(attrs);
+				// 4.深度优先遍历
+				rInflate(parser, view, attrs, true);
+				viewGroup.addView(view, params);
+			}
+		}
+	 
+	if (finishInflate) parent.onFinishInflate();
+}
+final View view = createViewFromTag(parent, name, attrs);
+final ViewGroup viewGroup = (ViewGroup) parent;
+final ViewGroup.LayoutParams params = viewGroup.generateLayoutParams(attrs);
+// 4.深度优先遍历
+rInflate(parser, view, attrs, true);
+viewGroup.addView(view, params);
+这里有可能你们会看着闷闷的，我来解释一下吧！
+首先是将解析到的name标签(这个是xml里面的节点Tag)，例如TextView，Button，我们通过createViewFromTag
+这个函数反射生成view(待会让你走进createViewFromTag这个函数)，然后呢拿到parent我们转换成viewGroup将生成的view填充至viewGroup中，
+在这里之前我们看到还有一个rInflate继续遍历，为啥有这个函数呢？原因是我们的布局中又可以又有布局，例如
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:orientation="vertical">
+
+    <LinearLayout
+    	android:layout_width="match_parent"
+    	android:layout_height="match_parent"
+    	>
+    	<TextView ...
+    </LinearLayout>
+
+</LinearLayout
+看这一段就知道了，当解析根节点后会发现下面的节点右是一个viewGroup，
+所以第一行才会是final int depth = parser.getDepth()，这个就是获取深度
+到此就完成了解析view，将根节点下面的所有view或viewGroup添加至parent，不过，当我们是的根节点是view而不是viewGroup会是什么样子呢？
+例如
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" />
+那么rinflate就不会进行遍历了，起始深度为0嘛，根本就直接进入的
+好了，接下来我们来看看createViewFromTag这个函数？
+View createViewFromTag(View parent, String name, Context context, AttributeSet attrs,
+            boolean ignoreThemeAttr) {
+    if (name.equals(view)) {
+        name = attrs.getAttributeValue(null, class);
+    }
+
+    // .....
+
+    try {
+        View view;
+        // 1.用户可以通过设置LayoutInflater的factory来自行解析view，默认这些Factory都为空，可以忽略这段
+        if (mFactory2 != null) {
+            view = mFactory2.onCreateView(parent, name, context, attrs);
+        } else if (mFactory != null) {
+            view = mFactory.onCreateView(name, context, attrs);
+        } else {
+            view = null;
+        }
+
+        if (view == null && mPrivateFactory != null) {
+            view = mPrivateFactory.onCreateView(parent, name, context, attrs);
+        }
+
+	    // 2.如果没有factory的情况下通过onCrewateView或者createView创建View
+        if (view == null) {
+            final Object lastContext = mConstructorArgs[0];
+            mConstructorArgs[0] = context;
+            try {
+            	// 3.内置view控件的解析
+                if (-1 == name.indexOf('.')) {
+                    view = onCreateView(parent, name, attrs);
+                } else {
+                	// 4.自定义view的解析
+                    view = createView(name, null, attrs);
+                }
+            } 
+        }
+        return view;
+        // ....
+}
+这个函数就是判断是自定义view控件还是内置view控件，然后调用了PhoneLayoutInflater布局中的onCreateView或createView中反射出一个view
+@Override
+protected View onCreateView(String name, AttributeSet attrs) throws ClassNotFoundException {
+    for (String prefix : sClassPrefixList) {
+        try {
+            View view = createView(name, prefix, attrs);
+            if (view != null) {
+                return view;
+            }
+        } catch (ClassNotFoundException e) {
+            // In this case we want to let the base class take a crack
+            // at it.
+        }
+    }
+
+    return super.onCreateView(name, attrs);
+}
+public final View createView(String name, String prefix, AttributeSet attrs)
+            throws ClassNotFoundException, InflateException {
+    // 1.从缓存的构造函数获取View的构造函数
+    Constructor<? extends View> constructor = sConstructorMap.get(name);
+    Class<? extends View> clazz = null;
+
+    try {
+        Trace.traceBegin(Trace.TRACE_TAG_VIEW, name);
+
+        // 2.如果没有缓存过就进行创建并缓存
+        if (constructor == null) {
+            // Class not found in the cache, see if it's real, and try to add it
+            clazz = mContext.getClassLoader().loadClass(
+                    prefix != null ? (prefix + name) : name).asSubclass(View.class);
+            
+            if (mFilter != null && clazz != null) {
+                boolean allowed = mFilter.onLoadClass(clazz);
+                if (!allowed) {
+                    failNotAllowed(name, prefix, attrs);
+                }
+            }
+            // 3.通过Class[]对象中获取构造函数
+            constructor = clazz.getConstructor(mConstructorSignature);
+            constructor.setAccessible(true);
+            // 4.缓存构造函数
+            sConstructorMap.put(name, constructor);
+        } else {
+            // 代码省略
+        }
+
+        Object[] args = mConstructorArgs;
+        args[1] = attrs;
+
+        // 5.通过反射构造view对象
+        final View view = constructor.newInstance(args);
+        if (view instanceof ViewStub) {
+            // Use the same context when inflating ViewStub later.
+            final ViewStub viewStub = (ViewStub) view;
+            viewStub.setLayoutInflater(cloneInContext((Context) args[0]));
+        }
+        return view;
+
+    }
+   	// 省略各种catch
+}
+从上往下，我们就完成了activity主入口进入，setContentView完全解析，让我们进入装逼模式，可以装装逼了
+现在我们来总结单例模式的优缺点：
+优点：
+(1).由于单例模式在内存中只有一个实例，减少了内存开支，特别是一个对象需要频繁地创建、销毁时，而且创建或销毁时性能又无法优化，单例模式的优势就非常明显了。
+(2).由于单例模式只生成一个实例，所以减少了系统的性能开销，当一个对象的产生需要比较多的资源时，如读取配置、产生其他依赖对象时，则可以通过在应用启动时直接产生一个单例对象，然后用永久驻留内存的方式来解决。
+(3).单例模式可以避免对资源的多重占用，例如一个写文件动作，由于只有一个实例存在内存中，避免对同一个资源文件的同时写操作。
+(4).单例模式可以在系统设置全局的访问点，优化和共享资源访问，例如可以设计一个单例类，负责所有数据表的映射处理。
+缺点：
+(1).单例模式一般没有接口，扩展很困难，若要扩展，除了修改代码基本上没有第二种途径可以实现。
+(2).单例模式对测试是不利的。在并行开发环境中，如果单例模式没有完成，是不能进行测试的，没有接口也不能用mock的方式虚拟一个对象。
+(3).单例模式与单一职责原则有冲突。一个类应该只实现一个逻辑，而不关心它是否是单例的，是不是要单例取决于环境，单例模式把“要单例”和业务逻辑融合在一个类中。
+(4).单例对象如果持有Context，那么狠容易引发内存泄露，此时需要注意传递给单例对象的Context最好用ApplicationContext
+单例模式的使用场景：
+要求生成唯一序列号的环境；
+在整个项目中需要一个共享访问点或共享数据，例如一个Web页面上的计数器，可以不用把每次刷新都记录到数据库中，使用单例模式保持计数器的值，并确保是线程安全的；
+创建一个对象需要消耗的资源过多，如要访问IO和数据库等资源；
+需要定义大量的静态常量和静态方法（如工具类）的环境，可以采用单例模式（当然，也可以直接声明为static的方式）。

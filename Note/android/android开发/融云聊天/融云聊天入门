@@ -1,0 +1,89 @@
+1.初始化应用
+EMChat.getInstance().init(getApplicationContext());
+EMChat.getInstance().setDebugMode(true);
+2.注册账号
+new Thread(new Runnable() {
+    public void run() {
+        try {
+            // 调用sdk注册方法
+            EMChatManager.getInstance().createAccountOnServer("15817930943", "xyhx1314520");
+        } catch (final EaseMobException e) {
+        }
+    }
+}).start();
+3.退出应用时
+EMChat.getInstance().setAutoLogin(false);
+4.退出聊天登陆
+EMChatManager.getInstance().logout();//此方法为同步方法
+//此方法为异步方法
+EMChatManager.getInstance().logout(new EMCallBack() {
+ 
+	@Override
+	public void onSuccess() {
+	    // TODO Auto-generated method stub
+ 
+	}
+ 
+	@Override
+	public void onProgress(int progress, String status) {
+	    // TODO Auto-generated method stub
+ 
+	}
+ 
+	@Override
+	public void onError(int code, String message) {
+	    // TODO Auto-generated method stub
+ 
+	}
+});
+5.发送文本
+//获取到与聊天人的会话对象。参数username为聊天人的userid或者groupid，后文中的username皆是如此
+EMConversation conversation = EMChatManager.getInstance().getConversation("15817930943");
+//创建一条文本消息
+EMMessage message = EMMessage.createSendMessage(EMMessage.Type.TXT);
+//如果是群聊，设置chattype,默认是单聊
+//        message.setChatType(EMMessage.ChatType.GroupChat);
+//设置消息body
+TextMessageBody txtBody = new TextMessageBody("您好，很高兴认识你");
+message.addBody(txtBody);
+//设置接收人
+message.setReceipt("13662984354");
+//把消息加入到此会话对象中
+conversation.addMessage(message);
+//发送消息
+EMChatManager.getInstance().sendMessage(message, new EMCallBack() {
+    @Override
+    public void onSuccess() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), "发送成功", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public void onError(int i, String s) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), "发送错误", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public void onProgress(final int i, final String s) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), "进度" + i + ":" + s, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+});
+
+
+
+
+

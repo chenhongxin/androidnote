@@ -1,0 +1,26 @@
+1.自定义控件有两种：View和ViewGroup
+View主要是处理三个函数：onMeasure、onLayout、onDraw
+onMeasure主要是做测量绘画的规格与大小
+测量有三种模式：EXACTLY、AT_MOST、UNSPECIFIED
+EXACTLY主要是对控件的大小精确设置，如match_parent，150dp
+AT_MOST是对控件的控件随子控件的内容变化而变化，如：wrap_content
+UNSPECIFIED：不指定大小，view想多大就多大，这种情况自绘制的时候才会使用
+通常使用MeasureSpec.getMode(measureSpec)获取规格就是上面三种模式
+使用MeasureSpec.getSize(measureSpec)获取控件的大小
+
+2.自定义控件有几种方式：绘画自己的控件，自定义一个多控件集合的控件
+
+3.事件拦截机制分析
+拦截事件是从外到里
+主要执行的流程：dispatchTouchEvent，onInterceptTouchEvent，onTouchEvent
+如果有三个控件执行的流程：
+A -> dispatchTouchEvent
+A -> onInterceptTouchEvent
+B -> dispatchTouchEvent
+B -> onInterceptTouchEvent
+View -> dispatchTouchEvent
+View -> onInterceptTouchEvent
+View -> onTouchEvent
+B -> onTouchEvent
+A -> onTouchEvent
+这个流程就像是老板->经理->干部->底层员工做一件事情一层一层吩咐下来，当有一层打乱了，后面的程序就乱了

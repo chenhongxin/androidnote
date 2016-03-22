@@ -1,0 +1,9 @@
+ls | grep "data"
+adb install -r apk应用
+安装apk程序之Push adb push <local> <remote> 例如：adb push D:/...apk /system/app
+从手机获取文件之pull：adb pull <remote> <local>，例如：adb push /system/app D:/...apk
+logcat | grep "abc" 查看Log
+1.adb remount --挂载 2.cd system/app 3.rm *.apk删除整个手机的apk程序，刷机
+查看系统盘符：adb shell df
+录制屏幕：adb shell screenrecord /sdcard/demo.mp4
+adb命令的来源目录：/system/core/toolbox 和 /framewords/base/cmds

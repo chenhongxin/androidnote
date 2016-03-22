@@ -1,0 +1,49 @@
+1.遍历一个数组
+Observable<String> sentenceObservable = Observable.from(“this”, “is”, “a”, “sentence”);
+sentenceObservable.subscribe(new Action1<String>() {
+	@Override
+	public void call(String s) {
+	System.out.println(s);
+	}
+});
+2.遍历一个数组用第一种然后通过变形进入第二种
+Observable<String> sentenceObservable = Observable.from(“this”, “is”, “a”, “sentence”);
+sentenceObservable.map(new Func1<String, String>() {
+	@Override
+	public String call(String s) {
+		return s.toUpperCase() + " ";
+	}
+	})
+	.toList()
+	.map(new Func1<List<String>, String>() {
+	@Override
+	public String call(List<String> strings) {
+		Collections.reverse(strings);
+		return strings.toString();
+	}
+	})
+	.subscribe(new Action1<String>() {
+		@Override
+		public void call(String s) {
+			System.out.println(s);
+		}
+	}
+)
+Observable.subscribeOn(Scheduler scheduler)函数指定Observable的工作需要在指定的Scheduler线程中执行。Observable.observeOn(Scheduler scheduler)指定Observable在哪个Scheduler线程触发订阅者们的onNext()，onCompleted()，和onError()函数，并调用Observable的observeOn()函数，传递正确的Scheduler给它。
+
+下面是可能会用到Scheduler：
+Schedulers.computation()：用于计算型工作例如事件循环和回调处理，不要在I/O中使用这个函数（应
+该使用Schedulers.io()函数）；
+Schedulers.from(executor)：使用指定的Executor作为Scheduler；
+Schedulers.immediate()：在当前线程中立即开始执行任务；
+Schedulers.io()：用于I/O密集型工作例如阻塞I/O的异步操作，这个调度器由一个会随需增长的线程池
+支持；对于一般的计算工作，使用Schedulers.computation()；
+Schedulers.newThread()：为每个工作单元创建一个新的线程；
+Schedulers.test()：用于测试目的，支持单元测试的高级事件；
+Schedulers.trampoline()：在当前线程中的工作放入队列中排队，并依次操作。
+通过设置observeOn和subscribeOn调度器，我们定义了网络请求使用哪个线程
+（Schedulers.newThread()）。
+
+
+
+

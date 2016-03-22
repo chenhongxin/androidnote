@@ -1,0 +1,15 @@
+android studio svn交互
+1.在设置中找到Version Control->Subversion->Use command line client
+我目前的路径：C:\Program Files\TortoiseSVN\bin\svn.exe
+2.运行产生build
+3.忽略文件分享上传
+3.1.在设置中找到Version Control->Subversion->Ignored Files
+3.2.忽略文件夹和文件
+	3.2.1.文件夹：build、.gradle、app\build、.idear
+	3.2.2.文件：local.properties
+	3.2.3.忽略所有匹配iml文件：*.iml
+4.将项目导入svn并分享
+	4.1.svn创建Repositories -> 创建项目名文件夹
+	4.2.VCS -> import into Version Control -> Import into Subversion->选择创建的Repositories并导入
+	4.3.VCS -> import into Version Control -> Shared Project -> 选择要分享的svn
+5.最后关闭项目重新打开ok

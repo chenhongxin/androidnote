@@ -1,0 +1,162 @@
+Android 动画机制与使用技巧
+1.透明动画
+AlphaAnimation alphaAnimation = new AlphaAnimation(0 ,1);
+alphaAnimation.setDuration(3000);
+findViewById(R.id.view).startAnimation(alphaAnimation);
+2.旋转
+RotateAnimation rotateAnimation = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF, Animation.RELATIVE_TO_SELF);
+rotateAnimation.setDuration(3000);
+findViewById(R.id.view).startAnimation(rotateAnimation);
+3.缩放
+// 从中心变回原样
+ScaleAnimation scaleAnimation = new ScaleAnimation(0, 1, 0, 1, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+scaleAnimation.setDuration(3000);
+findViewById(R.id.view).startAnimation(scaleAnimation);
+4.位移动画
+TranslateAnimation translateAnimation = new TranslateAnimation(0, 200, 0, 300);
+translateAnimation.setDuration(3000);
+findViewById(R.id.view).startAnimation(translateAnimation);
+5.动画集合
+AnimationSet animationSet = new AnimationSet(true);
+animationSet.setFillAfter(true);
+animationSet.setDuration(3000);
+TranslateAnimation translateAnimation = new TranslateAnimation(0, 200, 0, 300);
+translateAnimation.setDuration(3000);
+AlphaAnimation alphaAnimation = new AlphaAnimation(0 ,1);
+alphaAnimation.setDuration(3000);
+animationSet.addAnimation(translateAnimation);
+animationSet.addAnimation(alphaAnimation);
+findViewById(R.id.view).startAnimation(animationSet);
+6.ObjectAnimator单个属性动画
+6.1.直接使用get和set函数
+// 以中心旋转360
+ObjectAnimator.ofFloat(findViewById(R.id.view), "rotation", 0, 360f).setDuration(5000).start(); 
+6.2.帮类添加get和set函数
+public class WrapperView {
+	private View mTarget;
+	public WrapperView(View mTarget) {
+		this.mTarget = mTarget;
+	}
+
+	public int getWidth(){
+		return mTarget.getLayoutParams.width;
+	}
+
+	public void setWidth(int width){
+		mTarget.getLayoutParams.width = width;
+		mTarget.requestLayout();
+	}
+
+}
+使用：
+WrapperView wrapper = new WrapperView(findViewById(R.id.view));
+ObjectAnimator.ofFloat(wrapper, "width", 0, 360f).setDuration(5000).start();
+7.PropertyValuesHolder多个属性
+PropertyValuesHolder t = PropertyValuesHolder.ofFloat("translationX", 300);
+PropertyValuesHolder sx = PropertyValuesHolder.ofFloat("scaleX", 1f, 0, 1f);
+PropertyValuesHolder sy = PropertyValuesHolder.ofFloat("scaleY", 1f, 0, 1f);
+ObjectAnimator.ofPropertyValuesHolder(findViewById(R.id.view), t, sx, sy).setDuration(5000).start();
+8.ValueAnimator产生动画值
+ValueAnimator animator = ValueAnimator.ofFloat(0, 100);
+animator.setTarget(findViewById(R.id.view));
+animator.setDuration(5000).start();
+animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+    @Override
+    public void onAnimationUpdate(ValueAnimator animation) {
+        Log.i("json", animation.getAnimatedValue() + "");
+    }
+});
+9.动画事件的监听
+9.1.全部监听
+ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(findViewById(R.id.view), "width", 0, 360f);
+objectAnimator.addListener(new AnimatorListener() {
+    @Override
+    public void onAnimationStart(Animator animation) {
+        
+    }
+
+    @Override
+    public void onAnimationEnd(Animator animation) {
+
+    }
+
+    @Override
+    public void onAnimationCancel(Animator animation) {
+
+    }
+
+    @Override
+    public void onAnimationRepeat(Animator animation) {
+
+    }
+});
+9.2.选择性的监听动画
+ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(findViewById(R.id.view), "width", 0, 360f);
+objectAnimator.addListener(new AnimatorListenerAdapter() {
+    @Override
+    public void onAnimationEnd(Animator animation) {
+        super.onAnimationEnd(animation);
+    }
+});
+10.AnimatorSet：AnimatorSet与PropertyValuesHolder很相似
+ObjectAnimator t = ObjectAnimator.ofFloat(findViewById(R.id.view), "translationX", 300);
+ObjectAnimator sx = ObjectAnimator.ofFloat(findViewById(R.id.view), "scaleX", 1f, 0, 1f);
+ObjectAnimator sy = ObjectAnimator.ofFloat(findViewById(R.id.view), "scaleY", 1f, 0, 1f);
+AnimatorSet animatorSet = new AnimatorSet();
+animatorSet.setDuration(5000);
+animatorSet.playTogether(t, sx, sy);
+animatorSet.start();
+11.在XML中使用属性动画
+1.xml
+<?xml version="1.0" encoding="utf-8"?>
+<objectAnimator xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="1000"
+    android:valueFrom="1"
+    android:valueTo="2"
+    android:valueType="floatType"
+    android:propertyName="scaleX" />
+2.activity
+Animator animator = AnimatorInflater.loadAnimator(this, R.animator.colorchange);
+animator.setTarget(findViewById(R.id.view));
+animator.start();
+12.View的animate方法
+findViewById(R.id.view).animate().alpha(0).y(300).setDuration(5000).start();
+13.LayoutAnimationController->Android布局动画(如一个布局从原点开始展开)
+RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.aa);
+ScaleAnimation scaleAnimation = new ScaleAnimation(0, 1, 0, 1);
+scaleAnimation.setDuration(3000);
+LayoutAnimationController animationController = new LayoutAnimationController(scaleAnimation, 0.5f);
+animationController.setOrder(LayoutAnimationController.ORDER_NORMAL);
+relativeLayout.setLayoutAnimation(animationController);
+14.Interpolators(插值器)
+15.自定义动画
+public class CustomAnimator extends Animation{
+
+    Camera camera = new Camera();
+    int mWidth = 0;
+    int mHeight = 0;
+    @Override
+    protected void applyTransformation(float interpolatedTime, Transformation t) {
+        super.applyTransformation(interpolatedTime, t);
+        Matrix matrix = t.getMatrix();
+        camera.save();
+        camera.rotateY(10 * interpolatedTime);
+        camera.getMatrix(matrix);
+        camera.restore();
+        matrix.preTranslate(mWidth, mHeight);
+        matrix.postTranslate(-mWidth, -mHeight);
+    }
+
+    @Override
+    public void initialize(int width, int height, int parentWidth, int parentHeight) {
+        super.initialize(width, height, parentWidth, parentHeight);
+        setDuration(2000);
+        setFillAfter(true);
+        setInterpolator(new BounceInterpolator());
+        mWidth = parentWidth / 2;
+        mHeight = parentHeight / 2;
+    }
+}
+使用：
+CustomAnimator customAnimator = new CustomAnimator();
+findViewById(R.id.view).startAnimation(customAnimator);

@@ -1,0 +1,22 @@
+定位：
+1.申请key
+D6LBZ-QSIKV-J66PN-UZDVV-UNWBJ-NVBWQ
+2.实现定位api
+TencentLocationRequest request = TencentLocationRequest.create();
+TencentLocationManager manager = TencentLocationManager.getInstance(getApplicationContext());
+manager.requestLocationUpdates(request, new TencentLocationListenerImpl());
+class TencentLocationListenerImpl implements TencentLocationListener {
+	@Override
+	public void onLocationChanged(TencentLocation tencentLocation, int i, String s) {
+	    textView.setText(Html.fromHtml(tencentLocation.getAddress() +
+	            "<br/>" + tencentLocation.getCity() + "<br />" +
+	            tencentLocation.getDistrict() + "<br />" +
+	            tencentLocation.getStreet() + "<br />" +
+	            tencentLocation.getName() + tencentLocation.getAccuracy() + tencentLocation.getSpeed()));
+	}
+
+	@Override
+	public void onStatusUpdate(String s, int i, String s1) {
+	    textView2.setText(s + ":" + i);
+	}
+}
