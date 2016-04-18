@@ -1,5 +1,5 @@
 1.堆(heap)和栈(stack)有什么区别??
-1).heap是堆，stack是栈。
+1).heap是堆(存储地址)，stack是栈。
 2).stack的空间由操作系统自动分配和释放，heap的空间是手动申请和释放的，heap常用new关键字来分配。
 3).stack空间有限，heap的空间是很大的自由区。在Java中，若只是声明一个对象，则先在栈内存中为其分配地址空间，若再new一下，实例化它，则在堆内存中为其分配地址。
 4).举例：数据类型 变量名；这样定义的东西在栈区。如：Object a =null; 只在栈内存中分配空间new 数据类型();或者malloc(长度); 这样定义的东西就在堆区如：Object b =new Object(); 则在堆内存中分配空间
@@ -45,9 +45,3 @@ Kotlin、react-native
 2)Handler: 你可以构造Handler对象来与Looper沟通，以便push新消息到MessageQueue里;或者接收Looper从Message Queue取出)所送来的消息。
 3) Message Queue(消息队列):用来存放线程放入的消息。 
 4)线程：UIthread 通常就是main thread，而Android启动程序时会替它建立一个MessageQueue。
-
-
-
-
-
-

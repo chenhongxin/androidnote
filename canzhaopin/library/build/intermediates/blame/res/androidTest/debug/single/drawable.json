@@ -1,0 +1,26 @@
+[
+    {
+        "merged": "G:\\Users\\wangtao\\Documents\\WorkSpace\\canzhaopin\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable\\indicator_bg_bottom.xml",
+        "source": "G:\\Users\\wangtao\\Documents\\WorkSpace\\canzhaopin\\library\\build\\intermediates\\bundles\\debug\\res\\drawable\\indicator_bg_bottom.xml"
+    },
+    {
+        "merged": "G:\\android\\androidstudioproject\\canzhaopin\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable\\indicator_bg_top.xml",
+        "source": "G:\\android\\androidstudioproject\\canzhaopin\\library\\build\\intermediates\\bundles\\debug\\res\\drawable\\indicator_bg_top.xml"
+    },
+    {
+        "merged": "G:\\android\\androidstudioproject\\canzhaopin\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable\\indicator_bg_bottom.xml",
+        "source": "G:\\android\\androidstudioproject\\canzhaopin\\library\\build\\intermediates\\bundles\\debug\\res\\drawable\\indicator_bg_bottom.xml"
+    },
+    {
+        "merged": "G:\\Users\\wangtao\\Documents\\WorkSpace\\canzhaopin\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable\\indicator_bg_top.xml",
+        "source": "G:\\Users\\wangtao\\Documents\\WorkSpace\\canzhaopin\\library\\build\\intermediates\\bundles\\debug\\res\\drawable\\indicator_bg_top.xml"
+    },
+    {
+        "merged": "G:\\Users\\wangtao\\Documents\\SVNSpace\\canzhaopin\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable\\indicator_bg_top.xml",
+        "source": "G:\\Users\\wangtao\\Documents\\SVNSpace\\canzhaopin\\library\\build\\intermediates\\bundles\\debug\\res\\drawable\\indicator_bg_top.xml"
+    },
+    {
+        "merged": "G:\\Users\\wangtao\\Documents\\SVNSpace\\canzhaopin\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable\\indicator_bg_bottom.xml",
+        "source": "G:\\Users\\wangtao\\Documents\\SVNSpace\\canzhaopin\\library\\build\\intermediates\\bundles\\debug\\res\\drawable\\indicator_bg_bottom.xml"
+    }
+]

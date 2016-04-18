@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="topViewColor">#389fff</color>
+    <color name="transparent">#00000000</color>
+
+    <color name="viewBgColor">#eaeaea</color>
+    <color name="customGreenColor">#14cca6</color>
+    <color name="white">#ffffff</color>
+    <color name="inputViewBolderColoer">#d0d0d0</color>
+
+    <color name="bolderColoer">#dadada</color>
+    <color name="bolderPressColoer">#EA9200</color>
+    <color name="bolderCorrectColoer">#F5A623</color>
+
+    <color name="lightGrayColor">#dadada</color>
+    <color name="textBlackColor">#4a4a4a</color>
+    <color name="textLightGrayColor">#848484</color>
+    <color name="checkboxTextColor">#848484</color>
+    <color name="adv_editText_gb">#70000000</color>
+    <color name="lightGreenColor">#f8f8f8</color>
+    <color name="btnPressedColor">#ea9200</color>
+    <color name="listviewDividerColor">#eeeeee</color>
+    <color name="gray">#AAA9A9</color>
+    <color name="red">#ed3334</color>
+    <color name="customBlueColor">#3092f6</color>
+    <color name="darkGrayColor">#aeaeae</color>
+</resources>

@@ -1,0 +1,50 @@
+[
+    {
+        "merged": "G:\\Users\\wangtao\\Documents\\WorkSpace\\canzhaopin\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\slide_out_to_bottom.xml",
+        "source": "G:\\Users\\wangtao\\Documents\\WorkSpace\\canzhaopin\\library\\build\\intermediates\\bundles\\debug\\res\\anim\\slide_out_to_bottom.xml"
+    },
+    {
+        "merged": "G:\\android\\androidstudioproject\\canzhaopin\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\slide_out_to_top.xml",
+        "source": "G:\\android\\androidstudioproject\\canzhaopin\\library\\build\\intermediates\\bundles\\debug\\res\\anim\\slide_out_to_top.xml"
+    },
+    {
+        "merged": "G:\\Users\\wangtao\\Documents\\WorkSpace\\canzhaopin\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\slide_in_from_top.xml",
+        "source": "G:\\Users\\wangtao\\Documents\\WorkSpace\\canzhaopin\\library\\build\\intermediates\\bundles\\debug\\res\\anim\\slide_in_from_top.xml"
+    },
+    {
+        "merged": "G:\\android\\androidstudioproject\\canzhaopin\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\slide_in_from_top.xml",
+        "source": "G:\\android\\androidstudioproject\\canzhaopin\\library\\build\\intermediates\\bundles\\debug\\res\\anim\\slide_in_from_top.xml"
+    },
+    {
+        "merged": "G:\\Users\\wangtao\\Documents\\WorkSpace\\canzhaopin\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\slide_in_from_bottom.xml",
+        "source": "G:\\Users\\wangtao\\Documents\\WorkSpace\\canzhaopin\\library\\build\\intermediates\\bundles\\debug\\res\\anim\\slide_in_from_bottom.xml"
+    },
+    {
+        "merged": "G:\\Users\\wangtao\\Documents\\SVNSpace\\canzhaopin\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\slide_in_from_bottom.xml",
+        "source": "G:\\Users\\wangtao\\Documents\\SVNSpace\\canzhaopin\\library\\build\\intermediates\\bundles\\debug\\res\\anim\\slide_in_from_bottom.xml"
+    },
+    {
+        "merged": "G:\\android\\androidstudioproject\\canzhaopin\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\slide_out_to_bottom.xml",
+        "source": "G:\\android\\androidstudioproject\\canzhaopin\\library\\build\\intermediates\\bundles\\debug\\res\\anim\\slide_out_to_bottom.xml"
+    },
+    {
+        "merged": "G:\\Users\\wangtao\\Documents\\SVNSpace\\canzhaopin\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\slide_in_from_top.xml",
+        "source": "G:\\Users\\wangtao\\Documents\\SVNSpace\\canzhaopin\\library\\build\\intermediates\\bundles\\debug\\res\\anim\\slide_in_from_top.xml"
+    },
+    {
+        "merged": "G:\\Users\\wangtao\\Documents\\SVNSpace\\canzhaopin\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\slide_out_to_bottom.xml",
+        "source": "G:\\Users\\wangtao\\Documents\\SVNSpace\\canzhaopin\\library\\build\\intermediates\\bundles\\debug\\res\\anim\\slide_out_to_bottom.xml"
+    },
+    {
+        "merged": "G:\\Users\\wangtao\\Documents\\SVNSpace\\canzhaopin\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\slide_out_to_top.xml",
+        "source": "G:\\Users\\wangtao\\Documents\\SVNSpace\\canzhaopin\\library\\build\\intermediates\\bundles\\debug\\res\\anim\\slide_out_to_top.xml"
+    },
+    {
+        "merged": "G:\\Users\\wangtao\\Documents\\WorkSpace\\canzhaopin\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\slide_out_to_top.xml",
+        "source": "G:\\Users\\wangtao\\Documents\\WorkSpace\\canzhaopin\\library\\build\\intermediates\\bundles\\debug\\res\\anim\\slide_out_to_top.xml"
+    },
+    {
+        "merged": "G:\\android\\androidstudioproject\\canzhaopin\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\anim\\slide_in_from_bottom.xml",
+        "source": "G:\\android\\androidstudioproject\\canzhaopin\\library\\build\\intermediates\\bundles\\debug\\res\\anim\\slide_in_from_bottom.xml"
+    }
+]

@@ -1,0 +1,26 @@
+[
+    {
+        "merged": "G:\\Users\\wangtao\\Documents\\SVNSpace\\canzhaopin\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\pull_to_refresh_header_horizontal.xml",
+        "source": "G:\\Users\\wangtao\\Documents\\SVNSpace\\canzhaopin\\library\\build\\intermediates\\bundles\\debug\\res\\layout\\pull_to_refresh_header_horizontal.xml"
+    },
+    {
+        "merged": "G:\\android\\androidstudioproject\\canzhaopin\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\pull_to_refresh_header_vertical.xml",
+        "source": "G:\\android\\androidstudioproject\\canzhaopin\\library\\build\\intermediates\\bundles\\debug\\res\\layout\\pull_to_refresh_header_vertical.xml"
+    },
+    {
+        "merged": "G:\\Users\\wangtao\\Documents\\SVNSpace\\canzhaopin\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\pull_to_refresh_header_vertical.xml",
+        "source": "G:\\Users\\wangtao\\Documents\\SVNSpace\\canzhaopin\\library\\build\\intermediates\\bundles\\debug\\res\\layout\\pull_to_refresh_header_vertical.xml"
+    },
+    {
+        "merged": "G:\\android\\androidstudioproject\\canzhaopin\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\pull_to_refresh_header_horizontal.xml",
+        "source": "G:\\android\\androidstudioproject\\canzhaopin\\library\\build\\intermediates\\bundles\\debug\\res\\layout\\pull_to_refresh_header_horizontal.xml"
+    },
+    {
+        "merged": "G:\\Users\\wangtao\\Documents\\WorkSpace\\canzhaopin\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\pull_to_refresh_header_horizontal.xml",
+        "source": "G:\\Users\\wangtao\\Documents\\WorkSpace\\canzhaopin\\library\\build\\intermediates\\bundles\\debug\\res\\layout\\pull_to_refresh_header_horizontal.xml"
+    },
+    {
+        "merged": "G:\\Users\\wangtao\\Documents\\WorkSpace\\canzhaopin\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\pull_to_refresh_header_vertical.xml",
+        "source": "G:\\Users\\wangtao\\Documents\\WorkSpace\\canzhaopin\\library\\build\\intermediates\\bundles\\debug\\res\\layout\\pull_to_refresh_header_vertical.xml"
+    }
+]

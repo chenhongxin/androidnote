@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">残疾人招聘</string>
+    <string name="action_settings">Settings</string>
+
+    <string-array name="education_type">
+        <item>不限</item>
+        <item>初中及以下</item>
+        <item>中专</item>
+        <item>高中</item>
+        <item>大专</item>
+        <item>本科</item>
+        <item>硕士</item>
+        <item>博士</item>
+    </string-array>
+
+    <string-array name="work_time">
+        <item>一年以内</item>
+        <item>1-2年</item>
+        <item>2-5年</item>
+        <item>5年以上</item>
+    </string-array>
+
+    <string-array name="company_scale">
+        <item>10人以下</item>
+        <item>10-30人</item>
+        <item>30-100人</item>
+        <item>100人以上</item>
+    </string-array>
+    <string name="title_activity_user_pwd_upd">UserPwdUpdActivity</string>
+
+</resources>

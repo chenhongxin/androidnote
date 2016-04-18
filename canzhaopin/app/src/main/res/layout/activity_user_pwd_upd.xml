@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/layout_top" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80px"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30px"
+            android:text="输入旧密码"
+            android:textColor="@android:color/black"
+            android:textSize="48px" />
+
+        <EditText
+            android:id="@+id/et_upd_pwd_old"
+            android:layout_width="0dp"
+            android:layout_height="80px"
+            android:layout_marginLeft="15px"
+            android:layout_marginRight="30px"
+            android:layout_weight="1"
+            android:background="@drawable/edit_shape"
+            android:hint="请输入旧密码"
+            android:textColor="#a9a9a9"
+            android:textColorHint="#9a9a9a"
+            android:textSize="44px" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30px"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30px"
+            android:text="输入新密码"
+            android:textColor="@android:color/black"
+            android:textSize="48px" />
+
+        <EditText
+            android:id="@+id/et_upd_pwd_new"
+            android:layout_width="0dp"
+            android:layout_height="80px"
+            android:layout_marginLeft="15px"
+            android:layout_marginRight="30px"
+            android:layout_weight="1"
+            android:background="@drawable/edit_shape"
+            android:hint="请输入不少于6位的新密码"
+            android:textColor="#a9a9a9"
+            android:textColorHint="#9a9a9a"
+            android:textSize="44px" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30px"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30px"
+            android:text="确定新密码"
+            android:textColor="@android:color/black"
+            android:textSize="48px" />
+
+        <EditText
+            android:id="@+id/et_upd_pwd_again"
+            android:layout_width="0dp"
+            android:layout_height="80px"
+            android:layout_marginLeft="15px"
+            android:layout_marginRight="30px"
+            android:layout_weight="1"
+            android:background="@drawable/edit_shape"
+            android:hint="请再次输入新密码"
+            android:textColor="#a9a9a9"
+            android:textColorHint="#9a9a9a"
+            android:textSize="44px" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/b_upd_pwd_update"
+        android:layout_width="match_parent"
+        android:layout_height="80px"
+        android:layout_marginLeft="30px"
+        android:layout_marginRight="30px"
+        android:layout_marginTop="80px"
+        android:background="@drawable/btn_shape"
+        android:text="提交"
+        android:textColor="@android:color/white"
+        android:textSize="44px" />
+
+</LinearLayout>

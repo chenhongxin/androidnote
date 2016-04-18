@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:id="@+id/user_info_layout"
+              android:background="@color/viewBgColor"
+              android:orientation="vertical">
+
+    <include layout="@layout/layout_top"/>
+
+    <RelativeLayout
+        android:id="@+id/layout_user_head"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/white">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:text="头像"
+            android:textSize="15sp"/>
+
+        <com.haoxitech.canzhaopin.view.CircleImageView
+            android:id="@+id/image_head"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@+id/arrow_right"
+            />
+
+        <ImageView
+            android:id="@+id/arrow_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="15dp"
+            android:background="@drawable/arrow_right"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_user_name"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:text="昵称"
+            android:textSize="15sp"/>
+
+        <TextView
+            android:id="@+id/text_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="15dp"
+            android:layout_weight="1"
+            android:drawablePadding="5dp"
+            android:drawableRight="@drawable/arrow_right"
+            android:gravity="right|center_vertical"/>
+    </LinearLayout>
+
+    <include layout="@layout/layout_line_horizontal"/>
+
+    <LinearLayout
+        android:id="@+id/layout_sex"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:text="性别"
+            android:textSize="15sp"/>
+
+
+        <TextView
+            android:id="@+id/text_sex"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="15dp"
+            android:layout_weight="1"
+            android:drawablePadding="5dp"
+            android:drawableRight="@drawable/arrow_right"
+            android:gravity="right|center_vertical"/>
+
+    </LinearLayout>
+
+    <include layout="@layout/layout_line_horizontal"/>
+
+    <LinearLayout
+        android:id="@+id/layout_birthday"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:text="出生日期"
+            android:textSize="15sp"/>
+
+        <TextView
+            android:id="@+id/text_birthday"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="15dp"
+            android:layout_weight="1"
+            android:drawablePadding="5dp"
+            android:drawableRight="@drawable/arrow_right"
+            android:gravity="right|center_vertical"/>
+    </LinearLayout>
+
+    <include layout="@layout/layout_line_horizontal"/>
+
+    <LinearLayout
+        android:id="@+id/layout_telephone"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:text="联系电话"
+            android:textSize="15sp"/>
+
+        <TextView
+            android:id="@+id/text_telephone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="15dp"
+            android:layout_weight="1"
+            android:drawablePadding="5dp"
+            android:drawableRight="@drawable/arrow_right"
+            android:gravity="right|center_vertical"/>
+    </LinearLayout>
+
+    <include layout="@layout/layout_line_horizontal"/>
+
+    <LinearLayout
+        android:id="@+id/layout_num"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:text="残疾证编号"
+            android:textSize="15sp"/>
+
+        <TextView
+            android:id="@+id/text_num"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="15dp"
+            android:layout_weight="1"
+            android:drawablePadding="5dp"
+            android:drawableRight="@drawable/arrow_right"
+            android:gravity="right|center_vertical"/>
+    </LinearLayout>
+
+    <include layout="@layout/layout_line_horizontal"/>
+
+    <LinearLayout
+        android:id="@+id/layout_positin"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:text="期待职位"
+            android:textSize="15sp"/>
+
+        <TextView
+            android:id="@+id/text_expect_job"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="15dp"
+            android:layout_weight="1"
+            android:drawablePadding="5dp"
+            android:drawableRight="@drawable/arrow_right"
+            android:gravity="right|center_vertical"/>
+    </LinearLayout>
+
+    <include layout="@layout/layout_line_horizontal"/>
+
+    <LinearLayout
+        android:id="@+id/layout_salary"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:text="期待薪资"
+            android:textSize="15sp"/>
+
+        <TextView
+            android:id="@+id/text_expect_salary"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="15dp"
+            android:layout_weight="1"
+            android:drawablePadding="5dp"
+            android:drawableRight="@drawable/arrow_right"
+            android:gravity="right|center_vertical"/>
+    </LinearLayout>
+
+
+</LinearLayout>

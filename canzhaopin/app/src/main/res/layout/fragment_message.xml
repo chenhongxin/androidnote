@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <include layout="@layout/layout_top"/>
+
+    <RadioGroup
+        android:id="@+id/top_group"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/resume_btn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:button="@null"
+            android:gravity="center"
+            android:checked="true"
+            android:text="简历状态通知"
+            android:textColor="@drawable/text_select_color"/>
+
+        <RadioButton
+            android:id="@+id/invite_btn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:button="@null"
+            android:gravity="center"
+            android:text="企业邀请通知"
+            android:textColor="@drawable/text_select_color"/>
+
+        <RadioButton
+            android:id="@+id/notification_btn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:button="@null"
+            android:gravity="center"
+            android:text="推送通知"
+            android:textColor="@drawable/text_select_color"/>
+    </RadioGroup>
+
+    <include layout="@layout/layout_listview"/>
+
+</LinearLayout>
