@@ -1,0 +1,45 @@
+新的Service定义方式，不再有同步和异步之分
+关于在Retrofit 1.9中service 接口的定义，如果你想定义一个同步的函数，你应该这样定义：
+/* Synchronous in Retrofit 1.9 */
+  
+public interface APIService {
+  
+    @POST("/list")
+    Repo loadRepo();
+  
+}
+而定义一个异步的则是这样：
+/* Asynchronous in Retrofit 1.9 */
+  
+public interface APIService {
+  
+    @POST("/list")
+    void loadRepo(Callback<Repo> cb);
+  
+}
+但是在Retrofit 2.0上，只能定义一个模式，因此要简单得多。
+import retrofit.Call;
+
+public interface APIService {
+  
+    @POST("/list")
+    Call<Repo> loadRepo();
+  
+}
+而创建service 的方法也变得和OkHttp的模式一模一样。如果要调用同步请求，只需调用enqueue，或者调用enqueue来发起一个异步请求。
+同步请求
+Call<Repo> call = service.loadRepo();
+Repo repo = call.execute();
+异步请求
+Call<Repo> call = service.loadRepo();
+call.enqueue(new Callback<Repo>() {
+    @Override
+    public void onResponse(Response<Repo> response) {
+        // Get result Repo from response.body()
+    }
+  
+    @Override
+    public void onFailure(Throwable t) {
+  
+    }
+});

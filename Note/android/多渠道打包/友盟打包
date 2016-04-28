@@ -1,0 +1,24 @@
+http://mobile.umeng.com/analytics?spm=0.0.0.0.51R4xd
+1.申请友盟账号，申请应用的key，然后在配置文件使用
+<!-- 友盟 -->
+<meta-data
+    android:name="UMENG_APPKEY"
+    android:value="56ad7edae0f55a93550003aa" />
+<meta-data
+    android:name="UMENG_CHANNEL"
+    android:value="${UMENG_CHANNEL_VALUE}" />
+2.下载umeng的jar进行打包，将umeng-analytics-v5.6.4.jar，umeng-update-v2.6.0.1.jar，umeng_social_sdk.jar导入
+打包需要使用release，在Project Structure选择app然后选择Build Types选择release选项将Proguard File混淆文件选择进入选项
+如：G:\android\androidstudioproject\ZhaoWaiBao\app\proguard-rules.pro
+3.多渠道打包
+productFlavors {
+    xiaomi {}
+    umeng {}
+    yingyongbao {}
+    wandoujia {}
+    anzhuoshichang {}
+    baidu {}
+    _360 {}
+    _91 {}
+}
+4.生成多个apk文件然后根据各个市场上传apk文件到市场，根据4张以上的截图上传后等待后天申请

@@ -1,3 +1,39 @@
 1.scrollview嵌套listview运行后最先显示出来的位置不在顶部而是中间问题
 解决：android:focusableInTouchMode="true"
 	  android:focusable="true"
+
+2.设置字体大小
+update_search_btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+
+3.Android 代码中设置EditText只输入数字、字母
+// 方法1:建立一个DigitsKeyListener,然后把它设为你的EditText的KeyListener
+DigitsKeyListener numericOnlyListener = new DigitsKeyListener(false,true);
+et.setKeyListener(numericOnlyListener);
+// 方法2:为EditText设置一个NumberKeyListener,然后重写getAcceptedChars()方法和getInputType()方法
+et.setKeyListener(new NumberKeyListener() {
+    @Override
+    protected char[] getAcceptedChars() {
+        return new char[] { '1', '2', '3', '4', '5', '6', '7', '8','9', '0' };
+    }
+    @Override
+    public int getInputType() {
+        // TODO Auto-generated method stub
+        return Android.text.InputType.TYPE_CLASS_PHONE;
+    }
+});
+第一种可以输入小数。
+第二种由于设置了TYPE_CLASS_PHONE所以只能输入整数。且比较灵活。
+4.rxjava，retrofit，realm，databinding
+5.gson
+Gson gson = new Gson();//new一个Gson对象
+//json字符串
+String json = "{\"data\": \"123\",\"code\":\"200\",\"msg\":\"查询信息成功\"}\n";
+//new 一个Product对象
+Product<String> product = new Product();
+//将一个json字符串转换为java对象
+product = gson.fromJson(json, Product.class);
+Log.i("json", product.data + "");
+HashMap object = (HashMap) product.data;
+String userUserid = (String) object.get("userUserid");
+Log.i("json", userUserid + "");
+6.为什么问我都是例如、详述Android系统架构，包括层与层之间调用、binder、jni的运行机制，画出结构图，UML图，详细描述项目种的技术点这样的问题

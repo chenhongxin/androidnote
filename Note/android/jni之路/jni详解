@@ -1,0 +1,67 @@
+jni数据类型
+1.基本类型
+jboolean jbyte jchar jshort jint jlong jfloat jdouble
+2.复杂类型
+jobject
+	jclass
+	jstring
+	jarray
+		jobjectArray
+		jbooleanArray
+		jbyteArray
+		jcharArray
+		jshortArray
+		jintArray
+		jlongArray
+		jfloatArray
+		jdoubleArray
+	jthrowable
+3.类描述符(数组)
+类描述符是类的完整名称（包名+类名）,将原来的.分隔符换成/分隔符。比如在java代码中的java.lang.String类的类描述符就是java/lang/String。
+对于数组，其描述符是[+该类型的域描述符。比如int[] 其描述符为[I；float[] 其描述符为[F；String[]其描述符为[Ljava/lang/String；对于int[][] 其描述符为[[I；以此类推。。。
+4.域描述符
+对于引用类型的域描述符，其以L开始，以;结束。对于数组，其为[+其类型的域描述符+;
+比如：String类型的域描述符为Ljava/lang/String；int[]类型的域描述符为[I;Object[]类型的域描述符为[Ljava/lang/Object;
+5.方法描述符
+String test(); ----------------------------->()Ljava/lang/String;
+int f(int i, Object j);---------------------->(ILjava/lang/Object;)I
+set(byte[] bs);---------------------------->([B)V
+6.使用类型的例子
+#include <stdio.h>  
+#include <stdlib.h>  
+#include "demo_jni_Prompt.h"  
+JNIEXPORT jstring JNICALL Java_demo_jni_Prompt_getLine  
+  (JNIEnv *env, jobject clazz, jstring prompt)  
+{  
+     /**java中String类型的prompt这里，被转换成了jni中的一个类型jstring。 
+     ***那么这个jstring类型，我们可以直接cout输出吗？答案是否定的。 
+     ***我们知道在java中字符采用的是Unicode编码，在c/c++中，字符使用UTF-8编码 
+     ***我们不需要深入了解Unicode和UTF-8两种编码的具体方法和内容。我们只需要知道
+     ***Unicode采用的是16-bit编码，而UTF-8采用的是7-bit编码的，所以，我们需要
+     ***完成这一转换工作，jni已经提供了相应的接口，如下：
+     **/
+     char buf[128] = "我是从本地代码获取到的"; //字符缓冲
+     jbyte *str;//jbyte类型对应C中的unsigned char
+     str = (*env)->GetStringUTFChars(env, prompt, NULL); //这个函数就是将jstring类型的字符串转换为本地字符串，返回jbyte*类型  
+     if(str == NULL)  
+     {  
+         /** 
+            GetStringUTFChars方法可能会抛出一个OutOfMemoryError的异常，在jni中的异常机制和java中的并不一样 
+            在java中抛出异常，如果没有捕获，则程序结束运行；但是，在jni中，即使抛出异常，在本地代码的执行顺序依然不变。 
+            所以，这里判断NULL是必须的  
+         **/   
+         return NULL;  
+           
+     }  
+     printf("%s",str);
+     /** 
+     **使用完了utf-8类型的字符后，我们需要释放由上面方法返回的字符串，这样可以释放被这些字符占用的内存空间，避免造成内存瘫痪  
+     **/  
+     (*env)->ReleaseStringUTFChars(env, prompt, str);
+     //下面我们看看如何将本地的代码传到java
+     return (*env)->NewStringUTF(env, buf);  //该方法实例化一个UTF-8编码的本地字符串为java.lang.String类型，新创建的就是java中  
+     //Unicode类型的代表同一字符串的实例
+     //该方法同样可能抛出一个OutOfMemoryError的异常并返回NULL
+}
+GetStringUTFChars(JNIEnv*, jstring, default)由这个将jstring转换成jbyte类型
+ReleaseStringUTFChars释放转换的jchar类型
