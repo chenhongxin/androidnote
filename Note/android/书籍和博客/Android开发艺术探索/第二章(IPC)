@@ -1,0 +1,31 @@
+1.序列化保存不同进程通信
+Serializable接口
+1).需要使用serialVersionUID
+private static final long serialVersionUID = 2875878325L;
+2).类实现序列化接口
+implements Serializable
+2.Parcelable接口不同进程传数据
+3.Binder使用信使Messenger或AIDL进行通信
+Binder是ServiceManager连接各种Manager(ActivityManager、WindowManager等)和相应ManagerService的桥梁，
+是客户端和服务端进行通信的媒介，当bindService的时候，服务器会返回一个包含了服务端业务调用的Binder对象，
+通过Binder对象可以获取服务端提供的服务或数据，Binder接口实现包括Stub内部类，逻辑交由Stub的内部代理类Proxy来完成。
+Stub内部类包括主要的2个函数，asInterface根据不同进程获取不一样的实现接口类，调用queryLocalInterface
+函数进行判断当前进程是否含有该IInterface对象，如果有直接转成当前接口对象，如果没有则由Proxy代理通过RPC远程
+服务挂起当前线程并执行onTransact函数调用不同进程数据然后reture true，不阻拦其他进程获取数据。
+
+通俗解释Binder的执行流程是这样的：
+Client->远程请求Binder->写入参数date->调用transact函数使用RPC远程服务器，挂起当前线程，执行onTransact线程池->
+写入结果reply->返回数据给client
+
+特别注意的是，当服务端与客户端发生某种异常终止，这个时候我们到服务端的Binder连接已经断裂，那么客户端调用失败。
+我们可以采用DeathRecipient，在binderDie函数被调用时候调用linkToDeath函数重新唤醒连接
+
+使用信使Messenger，Messenger其实内部也是使用了Binder进行远程通信，看看构造函数
+public Messenger(Handler handler){
+	mTarget = target.getIMessenger();
+}
+4.使用Bundle通信
+5.使用文件共享
+6.使用ContentProvider内容提供者
+7.使用socket
+8.使用Binder连接池
