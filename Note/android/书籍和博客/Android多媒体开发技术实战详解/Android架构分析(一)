@@ -1,0 +1,41 @@
+1.1.Android体系结构介绍
+Android软件层次结构包括操作系统、中间件和应用层。
+1).操作系统层
+2).各种库和Android运行环境
+3).应用框架
+4).应用层
+
+1.操作系统层————最底层
+Android系统是基于linux 2.6操作系统，主要的驱动如下所示：
+1).显示驱动：常用语linux的帧缓冲驱动
+2).Flash内存驱动：基于MTD的Flash驱动程序
+3).相机驱动：常用基于Linux的v41(Video for)驱动
+4).音频驱动：常用基于ALSA（Advanced Linux Sound Architecture，高级Linux声音体系）驱动。
+5).WiFi驱动：基于IEEE 802.11标准的驱动程序
+6).键盘驱动：作为输入设备的键盘驱动
+7).蓝牙驱动：基于IEEE 802.15.1标准的无线传输技术
+8).Binder IPC驱动：Android的一个特殊的驱动程序，具有单独的设备节点，提供进程间通信功能。
+9).电源管理：管理电池电量等信息
+
+2.各种库和Android运行环境————中间件
+中间件趋向于C/C++的实现：
+C库：C语言的标准库，也是系统中一个最为底层的库，C库是通过Linux的系统调用实现的。
+多媒体框架：这部分内容是Android多媒体的核心部分，基于PacketVideo的OpenCore，从功能上本库一共分为两大部分，其中一部分是音频、视频的回放；另一部分则是音频、视频的记录。
+SGL：2D图像引擎。
+SSL：即Secure Socket Layer，位于TCP/IP协议与各种应用层协议之间，为数据通信提供安全支持。
+OpenGL ES 1.0：提供了对3D的支持。
+界面管理工具：提供了管理显示子系统等功能。
+SQLite：一个通用的嵌入式数据库。
+WebKit：网络浏览器的核心
+FreeType：提供了位图和矢量字体的功能。
+
+3.应用层框架
+Android应用层框架为应用程序层提供了API，包含ListView、GridView、TextView、Button等等。
+
+4.应用程序
+Android的应用程序主要是用户界面->UI，由5个部分组成：
+1).Activity
+2).Receiver
+3).Service
+4).ContentProvider
+5).Intent和IntentFilter

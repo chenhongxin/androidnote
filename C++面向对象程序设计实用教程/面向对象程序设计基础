@@ -1,23 +1,398 @@
-11.输入输出方式
-#include <istream.h>
+1.1.输入输出方式
+#include <iostream>
 using namespace std;
 int max(int, int);
 
-int main(){
+int main() {
     int x, y, z;
     cout << "input two number:" << endl;
     cin >> x >> y;
     z = max(x, y);
     cout << "max=" << z << endl;
+    system("pause");
     return 0;
 }
 
-int max(int a, int b){
+int max(int a, int b) {
     int c;
-    if(a > b){
+    if (a > b) {
         c = a;
-    }else{
+    }
+    else {
         c = b;
     }
     return c;
 }
+
+1.2.命名空间
+在C++中，名称可以是符号常量、变量、宏、函数和类等。为了避免冲突，使用namespace(命名空间或名字空间)。
+1.命名空间的定义方式
+namespace{
+    // 符号：类、变量、函数等
+}
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+namespace myown1 {
+    string user_name = "john";
+}
+
+namespace myown2 {
+    string user_name = "john";
+}
+
+int main() {
+    cout << "Hello，my name is" << myown1::user_name << endl;
+    cout << "Hello，my name is" << myown2::user_name << endl;
+    system("pause");
+    return 0;
+}
+1.3.命名空间成员的使用
+1).using 关键字
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+namespace myown1 {
+    string user_name = "john";
+}
+
+namespace myown2 {
+    string user_name = "john";
+}
+
+int main() {
+    using namespace myown1;
+    cout << "Hello，my name is" << user_name << endl;
+    cout << "Hello，my name is" << myown2::user_name << endl;
+    system("pause");
+    return 0;
+}
+
+2).命名空间别名
+namespace my1 = myown1; // 如同人有一个别名
+
+3).std标准命名空间
+std::cout << "显示输出内容" << endl;
+
+4).没有名称的命名空间
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+namespace {
+    void fun() {
+        cout << "Hello" << endl;
+    }
+}
+
+int main() {
+
+    fun();
+    system("pause");
+
+    return 0;
+}
+
+使用无名称命名空间则与文件同级，可直接调用.
+
+1.4.函数作用域
+文件名为test.cpp
+#include <iomanip>
+#include <iostream>
+using namespace std;
+
+extern void convert(int array[3][3]);
+
+void main() {
+    
+    int arr[3][3] = { 1,2,3,4,5,6,7,8,9 };
+    int i, j;
+    cout << "the source is:" << endl;
+    for (i = 0; i < 3; i++) {
+        for (j = 0; j < 3; j++) {
+            cout << setw(2) << arr[i][j];
+        }
+        cout << endl;
+    }
+    convert(arr);
+    cout << "the result is:" << endl;
+    for (i = 0; i < 3; i++) {
+        for (j = 0; j < 3; j++) {
+            cout << setw(2) << arr[i][j];
+        }
+        cout << endl;
+    }
+    system("pause");
+}
+
+文件名为extern.cpp
+#include <iostream>
+
+using namespace std;
+
+extern void convert(int array[3][3]) {
+    cout << "有进来" << endl;
+    int i, j, temp;
+    for (i = 0; i < 3; i++) {
+        for (j = 0; j < 3; j++) {
+            temp = array[i][j];
+            array[i][j] = array[j][i];
+            array[j][i] = temp;
+        }
+    }
+}
+
+1.5.编译预处理和多文件结构编译
+预处理功能主要三种：宏定义、文件包含和条件
+1).宏定义
+两种：不带参数宏定义，带参数宏定义。
+不带参数宏定义的格式为：#define <标识符> <字符串>，例如：#define PI 3.14
+const double PI = 3.14;
+带参数宏定义的格式为：#define <宏名>(参数列表) <字符串>，例如：#define S(r) PI*r*r
+C++中常用内联函数代替带参数的宏定义：
+inline float S(r){
+    return PI*r*r;
+}
+2).文件包含
+两种写法：
+#include <文件名> 
+#include "文件名"
+3).条件编译
+条件编译主要判断是否已定义某标识符.
+1.1.有定义标识符:
+#ifdef <标识符>
+    <程序段1>
+#else
+    <程序段2>
+#endif
+或
+#ifdef <标识符>
+    <程序段1>
+#endif
+
+如：
+#define cplusplus 0;
+#ifdef cplusplus
+#include "iostream"
+#else
+#endif
+
+1.2.没定义标识符:
+#ifnef <标识符>
+    <程序段1>
+#else
+    <程序段2>
+#endif
+或
+#ifnef <标识符>
+    <程序段1>
+#endif
+
+如：
+#define cplusplus 0;
+#ifndef cplusplus
+#else
+#include "iostream"
+#endif
+
+1.3.常量表达式
+#if <常量表达式1>
+    <程序段1>
+#elif <常量表达式2>
+    <程序段2>
+        .
+        .
+        .
+#else
+    <程序段n+1>        
+#endif
+
+1.4.枚举
+枚举的格式：
+enum <枚举类型名> {
+    变量值列表
+};
+
+#include "iostream"
+using namespace std;
+enum week {
+    Sunday,
+    Monday,
+    Tuesday,
+    Wednesday,
+    Thursday,
+    Friday,
+    Saturday
+};
+
+void main() {
+    int i;
+    week w1 = Tuesday;
+    cout << "w1 = " << w1 << endl;
+    i = w1;
+    cout << "i = " << i << endl;
+    enum week w2, w3;
+    w2 = (week)6;
+    cout << "w2 = " << w2 << endl;
+    w3 = week(3);
+    cout << "w3 = " << w3 << endl;
+    system("pause");
+}
+
+1.5.结构体
+为啥要用结构体？用过java面向对象的都知道，因为一个对象他包含许多属性，例如一个人的名称、年龄、性别...，那么我们可以用结构体把这些属性分装起来
+一般形式：
+struct 结构体类型名{
+  成员列表 
+};
+例如：
+struct student {
+    int num;
+    char name[20];
+    char sex;
+    int age;
+    float score;
+};
+
+结构体可以创建也可以声明：
+一般形式：
+struct 结构体名{
+    成员列表
+}变量名列表;
+例如：
+struct student{
+    int num;
+    char name[20];
+    char sex;
+    int age;
+    float score;
+}student1, student2;
+这样就声明了student1、student2的结构体了
+
+直接定义结构体类型变量
+struct {
+    成员列表
+}变量列表;
+
+如何引用结构体，通过.获取成员变量，例如
+char[] name = student.name;
+这样就可以获取到成员变量了.
+
+下面是一个例子：
+#include "iostream"
+using namespace std;
+
+struct person {
+    int num;
+    char name[20];
+    char sex;
+    int age;
+    float score;
+}per1, per2 = {1002, "chx", 'M', 87};
+
+void main() {
+    per1 = per2;
+    cout << per1.num << endl;
+    cout << per1.name << endl;
+    cout << per1.sex << endl;
+    cout << per1.score << endl;
+    system("pause");
+}
+
+运行结果：
+1002
+chx
+M
+0
+
+结构体与指针结合
+#include "iostream"
+using namespace std;
+#define N 3
+struct student {
+    int num;
+    char name[20];
+    char sex;
+    int age;
+    float score;
+};
+
+void main(){
+    student st[N], *p;
+    cout << "请输入" << N << "个学生的学号、姓名、年龄和成绩" << endl;
+    for (int i = 0; i < N; i++) {
+        cin >> st[i].num >> st[i].name >> st[i].sex >> st[i].age >> st[i].score;
+    }
+    cout << "\nNO.\tName\tSex\tAge\tScore\n" << endl;
+    cout << "---------------------------------\n" << endl;
+    p = st;
+    for (int i = 0; i < N; i++) {
+        cout << "" << p->num << "\t" << p->name << "\t" << p->sex << "\t" << p->age << "\t" << p->score << endl;
+        p++; // 指针往后移1位
+    }
+    system("pause");
+}
+运行结果
+请输入3个学生的学号、姓名、年龄和成绩
+1001 陈宏鑫 22 97
+1002 陈鼠标 22 97
+1003 陈老鼠 22 99
+
+NO.     Name    Sex     Age     Score
+
+---------------------------------
+
+1001    陈大大  2       2       97
+1002    陈鼠标  2       2       97
+1003    陈老鼠  2       2       99
+
+1.6.链表
+1).建立链表
+#define NULL 0
+#include "string"
+
+struct stud {
+    char name[10];
+    int score;
+    struct stud *next;
+};
+
+void main() {
+    struct stud a, b, c, *head, *p;
+    strcpy_s(a.name, "Wang");a.score = 82;
+    strcpy_s(b.name, "Fang"); b.score = 79;
+    strcpy_s(c.name, "Jiang"); c.score = 68;
+    head = &a;
+    a.next = &b;
+    b.next = &c;
+    c.next = NULL;
+    p = head;
+    do {
+        cout << p->name << "  " << p->score << endl;
+        p = p->next;
+    } while (p != NULL);
+    system("pause");
+}
+
+运行结果：
+Wang  82
+Fang  79
+Jiang  68
+
+
+
+
+
+
+
+
+
+
+
+
+
