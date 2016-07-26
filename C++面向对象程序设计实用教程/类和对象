@@ -1,0 +1,135 @@
+1.1.类
+1).类创建
+class Date {
+	int year;
+	int month;
+	int day;
+public:
+	void set_date(int year, int month, int day) {
+		Date::year = year;
+		Date::month = month;
+		Date::day = day;
+	}
+	void show() {
+		cout << year << "-" << month << "-" << day << endl;
+	}
+};
+
+void main() {
+	Date date;
+	date.set_date(2016, 7, 25);
+	date.show();
+	system("pause");
+}
+2).构造函数和析构函数
+class Box {
+public:
+	Box();
+	Box(int height, int width, int length);
+	int volume();
+	int area();
+private:
+	int height;
+	int width;
+	int length;
+};
+
+Box::Box() {
+	height = 10;
+	width = 20;
+	length = 30;
+}
+
+Box::Box(int height, int width, int length) {
+	Box::height = height;
+	Box::width = width;
+	Box::length = length;
+}
+
+int Box::volume() {
+	return height * width * length;
+}
+
+int Box::area() {
+	return 2 * (height * width * length);
+}
+
+void main() {
+	Box box;
+	cout << "The volume of box is" << box.volume() << endl;
+	cout << "The area of box is" << box.area() << endl;
+	Box box2(10, 10, 20);
+	cout << "The volume of box is" << box2.volume() << endl;
+	cout << "The area of box is" << box2.area() << endl;
+	system("pause");
+}
+
+参数构造函数还可以表现为：
+Box::Box(int height, int width, int length):height(height), width(width), length(length) {}
+
+析构函数：
+析构函数是提供一个在对象删除前可以释放这个对象所占有的资源的机会。比如：
+class A
+{
+    A(){m_a=new int[10];}
+    ~A(){delete [] m_a;}
+
+    int * m_a;
+
+}
+这种情况，你就可以清楚的看到，析构函数提供了一个释放m_a所占用的内存的机会——当然释放的动作还需要你使用delete来做到。这就是所谓的【在撤销对象占有的内存之前完成一些清理工作】的情形之一；还有就是再复杂一点的情况，请看下面例子：
+
+class B
+{
+    B(){}
+
+    ~B(){}
+
+    A a;
+
+}
+这个情况下，构造函数B()会自动调用A()函数来做A.m_a的初始化工作；而析构函数~B()会自动调用A的析构函数~A()做清除内存的动作。
+还有其他更复杂的情况，但原理都是提供了一个清理内存的机会。删除对象是编译器所做的工作，如你写一段如下代码：
+int main()
+{
+    int k = 10;
+
+    int d = 100;
+
+    int s = k+d;
+
+    return s;
+}
+像k,d,s这几个变量，都是函数内的局部变量，只存在于main()函数的生命周期里面，出了main函数就不存在了——注意，是不存在，不是不可见！因为在退出函数之前要做删除这些局部变量的动作。
+那么，这里是没有析构函数的，但对象是在main函数结构的时候删除的，也就是删除对象。这里没有动态内存。删除k,d,s对象的动作是和有析构函数的情况是一样的；只是有了析构函数，就会在这个删除对象动作之前做一些其他的清除内存的工作(像我上面举的两个析构函数例子)；请看：
+int main()
+{
+    A a;
+
+    B b;
+
+}
+这种情况，同样在main退出的时候，也是会和上面的k, d, s一样删除b对象的，没什么区别。但是B是一个类，就会在删除b对象之前调用B的析构函数~B()！
+OK？删除对象，是在析构函数之后进行的，这个变量出生命周期的时候就会先后调用~A(); ~B(); 然后再会删除这两个对象。
+至于你问我怎么删除的？我是知道的，但你目前的知识可能还不能理解。那是通过栈的局部变量方式来删除对象的。如果你学习了汇编与反汇编，就会明白。
+
+1.2.结构体
+struct student {
+	void set_st(int no1, char *name1, float score1);
+	void show() {
+		cout << "学号：" << no << "\n姓名：" << name << "\n分数：" << score << endl;
+	}
+private:
+	int no;
+	char name[20];
+	float score;
+};
+
+
+
+
+
+
+
+
+
