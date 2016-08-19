@@ -1,15 +1,75 @@
 上传测试包
 http://10.1.156.245:9090/login.htm
 功能测试
-http://xcs.zentaopm.com/user-login.html
-产品地址
-10.1.156.242 chanpin chanpin123
+http://xcs.zentaopm.com/user-login.html242 
+chanpin chanpin123
 后台
 http://10.1.156.240:8088/property/repair_list.htm#
 
-http://dev.xclife.cn/pages/viewpage.action?title=2.4.1API&spaceKey=xcs241
+http://dev.xclife.cn/
+产品地址
+10.1.156.ages/viewpage.action?title=2.4.1API&spaceKey=xcs241
+
+账号: pms_test  密码:123456
+http://10.1.156.240:8083/ver/version_list.htm;jsessionid=6A2D3ECC3C7D85F1D23EDB13F44BE7B4
 
 友盟账号
 ios_crashlog_2015@163.com
 xincheng@1234
+
+http://10.1.156.240:8088/message/push_message.htm#
+
+劝君莫惜金缕衣,劝君惜取少年时.花开堪折直须折,莫待无花空折枝.
+
+
+注: 一个app 被设置为 persistent 后，将很难被low memory kill 杀掉(oom_adj=-12)，请在设置之前仔细确认是否必须，否则将浪费掉memory。
+
+如果你后期觉得可以，我后期共享视频给你，我在网上报名的，到时候1个人50块钱就可以买，150块钱可以售后服务
+
+
+严重性	代码	说明	项目	文件	行	禁止显示状态
+错误	C4996	'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.	FirstProject	f:\candc++\c++\project\firstproject\firstproject\01.c	25	
+
+
+apkpatch.bat -f new.apk -t old.apk -o output1 -k debug.keystore -p android -a androiddebugkey -e android
+
+abominable 极其厌恶、极其讨厌
+aborigine (澳大利亚)土著居民
+abort 使...终止 使...流产，打掉，终止
+abortion 人工流产，堕胎
+abortive 流产的，夭折的
+abound 大量存在、盛产
+about 关于、怎么样
+about 大约
+above 在上面
+
+del lock /q/s
+
+
+
+
+
+if (tab == 1) {
+				mTab1.setTextColor(context.getResources().getColor(android.R.color.white));
+				mTab2.setTextColor(context.getResources().getColorStateList(
+						R.drawable.color_selector_tv_gray));
+				mTab1.setBackgroundResource(R.drawable.shape_round_left_gray);
+				mTab2.setBackgroundResource(R.drawable.common_round_right_white);
+				tvRed.setVisibility(View.GONE);
+				fragmentTransaction.show(fragments.get(0)).commit();
+			} else {
+				mTab1.setTextColor(context.getResources().getColorStateList(
+						R.drawable.color_selector_tv_gray));
+				mTab2.setTextColor(context.getResources().getColor(android.R.color.white));
+				mTab1.setBackgroundResource(R.drawable.common_round_left_white);
+				mTab2.setBackgroundResource(R.drawable.shape_round_right_gray);
+				fragmentTransaction.show(fragments.get(1)).commit();
+			}
+
+
+
+
+
+
+
 

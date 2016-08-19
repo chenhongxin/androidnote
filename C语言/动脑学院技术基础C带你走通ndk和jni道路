@@ -1,0 +1,351 @@
+我相信有很多人因为我的标题被我吸引过来了，没错，我接下来就是带大家仔细学好ndk和jni。由于如今视频、直播、底层开发功能日益旺盛，公司需要的人才也随着时间穿梭日益增多，你们也可以上各大招聘网站搜索ndk、jni开发，会有大量的公司在招这样的人才，那么接下来我免费把我自己在动脑学院学到的知识点共享给大家，希望大家因此能找到更好的工作，我们是为高薪奋战的少年，加油吧！！！
+动脑学院的ndk课程表：
+C：
+1.NDK开发必备的知识介绍、C/C++/Java相关性、C基本数据类型、输入输出函数、指针入门
+2.取地址符、通过传递指针修改变量、游戏外挂原理模拟
+3.指针为什么要有类型、指针与地址的区别、空指针、二级指针
+4.指针运算、指针与数组
+5.指针与二维数组、函数指针
+6.动态内存分配、malloc、free、calloc、realloc
+7.字符串
+8.字符串相关函数
+9.结构体、联合体、枚举
+10.文件IO
+
+JNI
+11.JNIEnv模拟、JNI数据类型
+12.C访问Java属性、方法
+13.NDK环境搭建与入门使用
+14.访问构造方法、父类的方法、中文乱码
+15.数组的处理、引用
+16.异常处理、缓存策略、预处理指令
+
+C++
+17.C++对C的增强、命名空间、引用
+18.引用的本质、函数的引用参数和返回值
+19.常量区别、指针引用、常引用、内联函数、函数参数默认值与可变参数
+20.函数指针与函数重载、类的封装
+21.析构函数、构造函数使用、拷贝函数、拷贝函数的场景
+22.浅拷贝、深拷贝解决方案
+23.构造函数的属性初始化列表、new、delete、static、对象的大小
+24.this指针、const修饰成员函数、友元函数友元类
+25.重载运算符、指针与引用的区别
+26.继承、多态
+27.虚函数列表、父类型指针++、纯虚函数与抽象类、函数模板
+28.函数模板机制、模板类、函数指针作为函数参数
+29.异常类型、异常对象的声明周期、throw使用、异常继承、标准异常处理_
+30.字符串string、vector_deque、queue
+31.multiset、map、multimap、容器拷贝问题
+32.函数对象、谓词、函数绑定、常用算法、容器练习
+33.NDK C++支持
+34.Ffmpeg介绍入门
+
+音视频处理
+35.音视频解码基础知识
+36.视频解码
+37.音频解码
+38.视频绘制
+39.音频播放
+40.音视频同步
+41.视频处理
+42.音频处理
+
+Linux系统编程
+43.Linux基本命令
+44.VIM使用
+45.Mikefile、文件I/O操作
+46.Linux文件系统剖析、进程管理
+47.进制控制原语
+48.进程间通信
+49.信号处理
+50.进程间关系和守护进程
+51.NDK双进程守护
+52.NDK双进程守护
+53.线程控制原语
+54.线程间同步
+55.网络编程
+56.网络编程
+
+NDK
+57.运行机制与流程、Android.mk
+58.Application.mk
+59.日志与调试
+60.OpenSL ES音频处理
+61.Native绘制
+
+视频直播与通话
+62.音频采集与视频捕获
+63.音频压缩FAAC
+64.视频压缩X264
+65.服务器部署、rtmp协议
+66.rtmp推流
+67.WebRTC入门
+68.NAT穿越与服务器部署
+69.NIO编程
+70.客户端与信号服务器通信
+
+首先我们先来学C，这段学习过程主要是要完成对jni的头文件完全搞通，所以请您要仔细看好的博客，从最简单的开始，不要因为前面的知识简单就不学了，老子说过：道有道,非常道;名有名,非常名。意思是说可以道说的道，并不是我们平常理解的这个道，可以道说的名，也不是我们平常所理解的名。简单来说，就是一切问题皆由简单开始到复杂，所以你可能需要一颗耐心，尽管东西会很枯燥，我后面也把视频共享出来了，如果觉得我说的不够好，可以让jason老司机带大家学好jni，哈哈，废话就不多说了。
+1.输出helloworld
+#include <stdio.h> // 只有函数的声明，编译时会去找到函数的实现
+
+void main(){
+	printf("hello world");
+	system("pause");
+}
+这个就是导入了stdio.h文件，跟java的import是不是很像，对的，其实就是它。把studio.h头文件导入该文件之后就可以使用该文件的属性、函数了，我们可以右键printf函数转定义到studio.h头文件可以看到这个函数printf(_In_z_ _Printf_format_string_ const char * _Format, ...)，对，这个就是该头文件的函数.
+system("pause")这个函数主要是对窗口运行之后暂停.
+
+2.基本数据类型
+在学习基本类型中，主要学
+int(整形)、short(短整形)、long(长整形)、double(双精度)、float(浮点数)、char(字符)
+那么我们看如何输出这几个类型
+/*
+	int %d
+	short %d
+	long %ld
+	float %f
+	double %lf
+	char %c
+	%x 十六进制
+	%o 八进制
+	%s 字符串
+*/
+void main(){
+	int i = 1;
+	printf("%d\n", i);
+
+	float f = 23.3;
+	printf("%f\n", f);
+
+	//基本数据类型所占的字节数
+	printf("int占%d字节\n", sizeof(int));
+	printf("char占%d字节\n", sizeof(char));
+	printf("float占%d字节\n", sizeof(float));
+
+	//循环
+	int n = 0;
+	for (; n < 10; n++){
+		printf("%d\n", n);
+	}
+
+	//等待输入
+	system("pause");
+}
+sizeof表示输出类型的占位符，int占4位、short占2位、long占4位、double占8位、float占8位、char占1位，所以输出的占位符分别为4、2、4、8、8、1
+还有一个是输出单位的值，如int输出是%d，double输出是%lf，float输出是%f
+
+3.输入输出函数
+void main(){
+	int i;
+	printf("请输入一个整数：");
+	//赋值
+	scanf("%d",&i);  //控制台输入，&取地址符
+	//打印
+	printf("i的值为：%d\n",i);
+
+	system("pause");
+}
+使用scanf(接收的数据类型, 类型的地址)，使用该函数可以接收用户输入的文本内容，%d表示用户输入int类型的字符
+
+4.指针
+1).指针存储的是变量的内存地址
+2).内存地址，系统给数据分配的编号（门牌号）
+void main(){
+	int i = 90;
+	//指针变量，创建一个int类型的指针
+	int* p = &i; //p的值就是i这个变量的内存地址
+	printf("%#x\n",p);
+
+	float f = 89.5f;
+	//创建一个float类型的指针
+	float *fp = &f;
+	printf("%#x\n", fp);
+
+	system("pause");
+}
+
+地址的改变
+void change(int* p){
+	*p = 300;
+}
+
+//变量名，对内存空间上的一段数据的抽象
+void main(){
+	int i = 90;
+	//i = 89;
+	//创建一个int类型的指针
+	int *p = &i;
+	//输出地址
+	printf("p的地址：%#x\n",&p);
+	printf("i的地址：%#x\n",&i);
+
+	printf("i的值为：%d\n", i);
+	//间接赋值 i = 200;
+
+	//对p存的地址指向的变量进行操作
+	//*p = 200;
+	//change(p);
+	change(&i);  // int *p = &i;
+	printf("i的值为：%d\n",i);
+
+	system("pause");
+}
+通过这个例子我们可以改变i的值，实现函数中也能够改变外部函数的值
+
+
+最后搞一个例子，通过这个例子我们可以开挂，让游戏时间加长，
+
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <stdlib.h>
+#include <Windows.h>
+
+1.栈和堆内存分配
+void stackFun() {
+	int a[1024];
+}
+
+void heapFun() {
+	int *p = malloc(1024 * 1024 * 1 * sizeof(int));
+	free(p);
+}
+
+void main() {
+	while (1) {
+		Sleep(1000);
+		heapFun();
+	}
+	system("pause");
+}
+
+2.分配内存和释放内存
+/*
+	静态内存分配，分配内存大小的是固定，所以会有两个问题：
+		1.很容易超出栈内存
+		2.为了防止内存溢出会开辟更多的内存，容易造成内存的浪费
+	动态内存分配，在程序运行程序中，动态指定需要使用的内存大小，手动释放，释放之后这些内存可以被重新使用
+*/
+void main() {
+	int len;
+	printf("请输入数组的长度：");
+	scanf("%d", &len);
+
+	// 开辟内存，大小len*4字节
+	int *p = malloc(len * sizeof(int));
+	// 使用开辟的空间呢
+	int i = 0;
+	for (;i < len;i++) {
+		p[i] = rand() % 100;
+		printf("p值为：%d\tp的地址为：%#x\n", p[i], &p[i]);
+	}
+	free(p);
+	system("pause");
+}
+
+3.
+// 重新分配内存
+// 1.如果当前内存段后面有需要的内存空间，直接扩展这段内存空间，realloc返回原指针
+// 2.如果当前内存段后面的内存字节不够，那么就使用堆中的第一个能够满足这一要求的内存块，将目前的数据复制到新的位置，并将原来的数据块释放，返回新的内存地址
+// 3.如果申请失败，返回NULL
+void main() {
+	int len;
+	printf("请输入数组的长度：");
+	scanf("%d", &len);
+
+	// 开辟内存，大小len*4字节
+	int *p = malloc(len * sizeof(int));
+	// 使用开辟的空间呢
+	int i = 0;
+	for (; i < len; i++) {
+		p[i] = rand() % 100;
+		printf("p值为：%d\tp的地址为：%#x\n", p[i], &p[i]);
+	}
+
+	int addLen;
+	scanf("%d", &addLen);
+	i = 0;
+	int *p2 = realloc(p, (len + addLen) * sizeof(int));
+	for (; i < len + addLen; i++) {
+		p2[i] = rand() % 100;
+		printf("p值为：%d\tp的地址为：%#x\n", p2[i], &p2[i]);
+	}
+	free(p);
+	p = NULL;
+	system("pause");
+}
+
+4.
+// 内存分配的几个注意细节
+// 1.不能多次释放内存地址
+// 2.释放完之后(指针任然有值)，给地址设置NULL，标志释放完成
+// 3.内存泄漏，重新赋值一个地址之后再free释放内存，并没有真正释放内存
+void main() {
+	int len;
+	printf("请输入数组的长度：");
+	scanf("%d", &len);
+
+	// 开辟内存，大小len*4字节
+	int *p = malloc(len * sizeof(int));
+	// 使用开辟的空间呢
+	int i = 0;
+	for (;i < len;i++) {
+		p[i] = rand() % 100;
+		printf("p值为：%d\tp的地址为：%#x\n", p[i], &p[i]);
+	}
+	if (p != NULL) {
+		free(p);
+		p = NULL;
+	}
+	system("pause");
+}
+
+5.字符串
+// 定义
+void main() {
+	// 方法一
+	// char str[] = {'h', 'e', 'l', 'l', 'o', "\0"};
+	// 方法二
+	// char str[6] = { 'h', 'e', 'l', 'l', 'o' };
+	// 方法三
+	// char str[] = "hello";
+	// 方法四
+	char *str = "hello";
+	printf("%s\n", str);
+	system("pause");
+}
+
+// 使用字符串函数
+// 1.strcpy帮字符串赋值 2.strcat连接字符串
+void main() {
+	char dest[50] = "abcd";
+	char *a = "china";
+	char *b = " is powerful";
+	strcpy(dest, a);
+	strcat(dest, b);
+	printf("%s\n", dest);
+	system("pause");
+}
+
+// 寻找位置
+// 1.strchr找到一个字符的位置 2.strstr找到字符串的匹配位置
+void main() {
+	/*char *str = "Hello, My name is chx";
+	char *p = strchr(str, 's');
+	if (p) {
+		printf("%d\n", p - str);
+	}
+	else {
+		printf("没有找到！\n");
+	}*/
+	char *str = "Hello, My name is chx";
+	char *needle = "name";
+	char *p = strstr(str, needle);
+	if (p) {
+		printf("%d\n", p - str);
+	}
+	else {
+		printf("没有找到！\n");
+	}
+
+	system("pause");
+}

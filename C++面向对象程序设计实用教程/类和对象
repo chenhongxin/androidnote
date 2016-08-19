@@ -113,6 +113,281 @@ int main()
 OK？删除对象，是在析构函数之后进行的，这个变量出生命周期的时候就会先后调用~A(); ~B(); 然后再会删除这两个对象。
 至于你问我怎么删除的？我是知道的，但你目前的知识可能还不能理解。那是通过栈的局部变量方式来删除对象的。如果你学习了汇编与反汇编，就会明白。
 
+3).类的静态变量：
+class M {
+public:
+	M(int a) {
+		A = a;
+		B += a;
+	}
+	static void f(M m);
+private:
+	int A;
+	static int B;
+};
+
+void M::f(M m) {
+	cout << "A=" << m.A << endl;
+	cout << "B=" << B << endl;
+}
+
+int M::B = 0;
+void main() {
+	M P(5), Q(10);
+	M::f(P);
+	M::f(Q);
+	system("pause");
+}
+
+4).常引用
+class Stat {
+public:
+	int i;
+	float f;
+	void set(int i, float f) {
+		Stat::i = i;
+		Stat::f = f;
+	}
+};
+
+void display(const Stat &p) {
+	cout << p.i << "\t" << p.f << endl;
+	//p.i = 20; // 此语法出错，因为p是常引用不能改变其值
+
+}
+
+void main() {
+	Stat obj;
+	obj.set(10, 3.14);
+	display(obj);
+	system("pause");
+}
+
+5).常对象
+class A {
+	int x, y;
+public:
+	A(int x, int y):x(x), y(y) {}
+	void show() const {
+		cout << x << "\t" << y << endl;
+	}
+};
+
+void main() {
+	const A a1(10, 20);
+	a1.show();
+	A const a2(100, 200);
+	a2.show();
+	system("pause");
+}
+
+6).友元
+友元函数特点：
+(1).非成员函数，但可范文类中的私有成员
+(2).某些成员函数多次调用，由于参数传递、类型检查和安全性检查等都需要时间开销，因而影响程序的运行效率.
+1.1.通用函数
+类的函数加上friend关键字后跟普通函数一样调用，他的用法与抽象类的抽象函数有异曲同工之妙，也就是说该友元函数只能写方法体，不能被实现，要在外面实现该友元函数。
+#include <math.h>
+
+class Triangle {
+	int a, b, c;
+public :
+	friend float area(Triangle triangle);
+	void setData(int a, int b, int c);
+};
+
+float area(Triangle temp) {
+	float p;
+	float s;
+	p = (temp.a + temp.b + temp.c) / 2;
+	s = sqrt(p * (p - temp.a) * (p - temp.b) * (p - temp.c));
+	cout << "执行了" << endl;
+	return s;
+}
+
+void Triangle::setData(int a, int b, int c) {
+	this->a = a;
+	this->b = b;
+	this->c = c;
+}
+
+void main() {
+	Triangle triangle;
+	triangle.setData(4, 5, 4);
+	cout << area(triangle) << endl;
+	system("pause");
+}
+
+7).多继承与虚基类
+7.1).多继承
+class B1 {
+public:
+	int data;
+	void g() {}
+	void fun() {
+		cout << "This is B1\t" << data << endl;
+	}
+};
+
+class B2 {
+public:
+	int data;
+	void g() {}
+	void fun() {
+		cout << "This is B2\t" << data << endl;
+	}
+};
+
+class B :public B1, public B2 {
+public:
+	int data;
+	void fun() {
+		cout << "This is B\t" << data << endl;
+	}
+};
+
+void main() {
+	B b;
+	//b.g(); // 不明确，因为继承是2个父类
+	b.data = 1;
+	b.fun();
+	b.B1::data = 5;
+	b.B1::fun();
+	b.B2::data = 6;
+	b.B2::fun();
+	system("pause");
+}
+
+7.2).虚基类
+在派生类中同时拥有数据成员和成员函数的两份拷贝，出现重复继承，增加了内存开销。实际应用中，往往同一成员只需要一份数据拷贝，为了解决此问题，C++引进了虚基类的概念.
+虚基类的声明是在派生类的声明过程中完成的，在继承方式前加上virtual关键字即可.
+class Base {
+public:
+	int data;
+	void fun() {
+		cout << "This is Base" << endl;
+	}
+};
+
+class M : virtual public Base {
+
+};
+
+class N : virtual public Base {
+
+};
+
+class P : public M, public N {
+public:
+	void fun() {
+		cout << "This is P\t" << data << endl;
+	}
+};
+
+void main() {
+	P p;
+	p.data = 2;
+	p.fun();
+	system("pause");
+}
+
+7.3).虚基类及其派生类的构造函数
+class Base {
+private:
+	int data;
+public:
+	Base(int data) {
+		this->data = data;
+		cout << "class Base Constructor data=" << data << endl;
+	}
+}; 
+
+class M :virtual public Base {
+
+private:
+	int num;
+public:
+	M(int data, int num) :Base(data) {
+		this->num = num;
+		cout << "class M Constructor num=" << num << ":data:" << data << endl;
+	}
+
+};
+
+class N :virtual public Base {
+
+private:
+	int num;
+public:
+	N(int data, int num) :Base(data) {
+		this->num = num;
+		cout << "class N Constructor num=" << num << ":data:" << data << endl;
+	}
+
+};
+
+class P : public M, public N {
+private:
+	int pp;
+public:
+	P(int data, int m, int n, int p) :Base(data), M(data, m), N(data, n) {
+		pp = p;
+		cout << "class P constructor pp = " << pp << endl;
+	}
+};
+
+void main() {
+	P p(1, 2, 3, 4);
+	system("pause");
+}
+
+8).赋值兼容规则
+class A {
+public:
+	void display() {
+		cout << "A:display()" << endl;
+	}
+};
+
+class B : public A {
+public:
+	void display() {
+		cout << "B:display()" << endl;
+	}
+};
+
+class C : public B {
+public:
+	void display() {
+		cout << "C:display()" << endl;
+	}
+};
+
+void fun(A *ptr) {
+	ptr->display();
+}
+
+void main() {
+	A a;
+	B b;
+	C c;
+	A *ptr;
+	ptr = &a;
+	fun(ptr);
+	ptr = &b;
+	fun(ptr);
+	ptr = &c;
+	fun(ptr);
+	system("pause");
+}
+运行结果：
+A:display()
+A:display()
+A:display()
+
+
+
+
 1.2.结构体
 struct student {
 	void set_st(int no1, char *name1, float score1);
