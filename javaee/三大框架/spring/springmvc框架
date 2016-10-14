@@ -1,0 +1,641 @@
+springmvc基础知识
+什么是springmvc?
+springmvc框架原理
+    处理器映射器、处理器适配器、视图解析器
+springmvc入门程序
+    目的：对前端控制器、处理器映射器、处理器适配器、视图解析器
+    非注解的处理器映射器、处理器适配器
+    注解的处理器映射器、处理器适配器
+什么是springmvc?
+Springmvc是spring框架的一个模块，是一个基于mvc的web框架
+什么是mvc?
+mvc是一个设计模式
+用户请求  (request请求)-> C(控制器)Controller  
+           response响应<-          ↓             ↓请求模型进行处理
+                                   ↓             ↑处理结果返回
+渲染视图(将模型数据填充至request域)↓    M(模型)pojo、action、service、dao
+                    V(视图)jsp、freemarker、work、pdf
+什么是springmvc?
+用户请求 (request请求)  ->  前端控制器(DispatcherServlet)   (请求查找handler)->   处理器映射器(HandlerMapping)
+                                                                <-(返回一个执行链
+                                                                    HandlerExcecutionChain{
+                                                                        HandlerInterceptor
+                                                                        Handler
+                                                                    }
+                                                                )
+                                        ↓请求处理器适配器执行Handler
+                                        ↑返回ModelAndView
+                        ↓请求进行视图解析
+                        ↑返回view
+        ↓视图渲染
+        视图              视图解析器                                          Handler 处理器
+(jsp、freemarker...)                                                      (事实是一个Controller)
+                                                                            ↑执行Hanler
+                                                                            ↓返回ModelAndView
+                                        处理器适配器(HandlerAdapter)执行Handler
+步骤：
+1.发出请求到前端控制器DispatcherServlet
+2.前端控制器请求HandlerMapping查找Handler(可以根据xml配置、注解进行查找)
+3.处理器映射器HandlerMapping向前端控制器返回Handler
+4.前端控制器调用处理器适配器执行Handler
+5.处理器适配器执行Handler
+6.处理器给处理器适配器返回ModelAndView
+7.处理器适配器向前端控制器返回ModelAndView
+8.前端控制器请求视图解析器解析(根据逻辑视图名解析成真正的视图)
+9.视图解析器向前端控制器返回view
+10.前端控制器渲染view(渲染视图(将模型数据填充至request域))
+11.前端控制器向用户响应
+
+springmvc入门
+1.配置环境
+jdk1.8 eclipse
+2.springmvc版本4.2
+3.非注解的处理器映射器和处理器适配器
+3.1.处理器设配器
+3.1版本之前用org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter
+3.1版本之后用org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter
+3.2.处理器映射器
+3.1版本之前用org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping
+3.1版本之后用org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
+4.注解的处理器映射器和处理器适配器
+4.1.<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter" />
+<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />
+<!--使用mvc:annotation-driven代替上邊註解映射器和註解適配器配置
+    mvc:annotation-driven默認加載很多的參數綁定方法，比如json轉換解析器就默認加載了，
+    如果使用mvc:annotation-driven不用配置上邊的RequestMappingHandlerAdapter和RequestMappingHandlerMapping
+    實際開發時使用mvc:annotation-driven
+-->
+<mvc:annotation-driven></mvc:annotation-driven>
+4.2.在spring容器中加载handler
+<!-- 可以掃描controller、service，指定controller的包名 -->
+<context:component-scan base-package="com.app.chx.controller"></context:component-scan>
+4.3.在handler中使用注解
+@Controller
+public class GoodsController {
+
+    @RequestMapping(value = "queryGoods")
+    public ModelAndView queryGoods() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("value", "數據");
+        modelAndView.setViewName("/WEB-INF/jsp/items/items_controller.jsp");
+
+        return modelAndView;
+    }
+
+}
+5.源码跟踪
+通过前端控制器源码分析springmvc的执行过程
+1.前端控制器接收请求
+执行doDispatch
+2.前端控制器请求HandlerMapping查找Handler
+getHandler();获取HandlerExecutionChain
+3.调用处理器适配器执行handler，得到ModelAndView
+ha.handler(processedRequest, response, mappedHandler.getHandler());
+4.视图渲染，将model数据填充到request域
+视图解析，得到view
+view = resolveViewName(mv.getViewName(), mv.getModelInternal(), locale, request);
+调用view的渲染方法，将model数据填充到request域
+渲染方法：
+view.render(mv.getModelInternal(), request, response);
+执行了exposeModelAsRequestAttributes方法遍历model的map集合将key-value填充至request中
+
+入门程序
+1.配置view前缀和后缀
+<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" >
+    <property name="prefix" value="/WEB-INF/jsp/" />
+    <property name="suffix" value=".jsp" />
+</bean>
+
+2.搭建工程
+com.itcast.ssm.controller 表现层
+com.itcast.ssm.mapper dao层(mybatis)
+com.itcast.ssm.po 
+com.itcast.ssm.service.impl 接口和实现
+
+springmvc和mybatis整合
+springmvc和mybatis的系统架构
+
+表现层(handler)
+springmvc
+
+业务层(service接口)                          spring将各层进行整合，通过spring管理持久层的mapper(相当于dao接口)
+spring                                       通过spring管理业务层service，service中可以调用mapper接口，通过spring管理表现层handler，
+                                             handler可以调用service接口，mapper、service、handler都是javabean
+持久层(mapper)
+mybatis
+
+数据库
+mysql
+
+第一步：整合dao层
+mybatis和spring整合，通过spring管理mapper接口
+使用mapper的扫描器自动扫描mapper接口在spring中进行注册。
+
+第二步：整合service层
+通过spring管理service接口，使用配置方式将service接口配置在spring配置文件中。
+实现事物控制。
+
+第三步：整合springmvc
+由于springmvc是spring的模块，不需要整合
+
+3.整合dao
+spring和mybatis整合，通过spring管理mapper接口
+使用mapper的扫描器自动扫描mapper接口
+3.1.在config文件夹创建包名为:mybatis->sqlMapConfig.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd" >
+<configuration>
+
+    <!-- 全局setting配置，根据需要添加(二级缓存) -->
+
+    <!-- 配置别名 -->
+    <typeAliases>
+        <!-- 批量扫描别名 -->
+        <package name="com.itcast.ssm.po" />
+    </typeAliases>
+
+    <!-- 配置mapper
+        由于使用spring和mybatis的整合包进行mapper扫描，这里不需要配置了.
+        必须遵循：mapper.xml和mapper.java文件同名且在同一个目录
+     -->
+    <!-- <mappers>
+        
+    </mappers> -->
+
+
+</configuration>
+3.2.在config文件夹创建包名为:spring->springApplication-dao.xml
+配置springApplication-dao.xml文件的步骤：
+3.2.1.加载db.properties文件中的内容
+3.2.2.配置数据源
+3.2.3.配置session工厂
+3.2.4.自动扫描所有的Mapper接口与文件
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- 加载db.properties文件中的内容，db.properties文件中key命名要有一定的特殊规则 -->
+    <context:property-placeholder location="classpath:db.properties" />
+
+    <!-- 配置数据库，dbcp -->
+    <!-- 配置数据源 -->
+    <bean id="datasource" class="org.apache.commons.dbcp.BasicDataSource"
+        destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driverClass}" />
+        <property name="url" value="${jdbc.jdbcUrl}" />
+        <property name="username" value="${jdbc.user}" />
+        <property name="password" value="${jdbc.password}" />
+        <property name="maxActive" value="30" />
+        <property name="maxIdle" value="5" />
+    </bean>
+
+    <!-- 配置session工厂 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="datasource"></property>
+        <!-- 加载mybatis.cfg.xml文件 -->
+        <property name="configLocation" value="classpath:mybatis/sqlMapConfig.xml"></property>
+        <!-- 自动扫描需要定义类别名的包，将包内的JAVA类的类名作为类别名 -->
+        <!-- <property name="typeAliasesPackage" value="com.app.entity"></property> -->
+    </bean>
+
+    <!-- 自动扫描所有的Mapper接口与文件 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!-- 扫描包路径，如果需要扫描多个包，中间使用半角逗号,隔开 -->
+        <property name="basePackage" value="com.itcast.ssm.mapper"></property>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+    </bean>
+
+</beans>
+3.3.配置mapper配置文件
+3.3.1.配置po文件
+/**
+ * 商品信息的可扩展类
+ * @author chenhongxin
+ *
+ */
+public class ItemsCustomer extends Items {
+
+}
+
+/**
+ * 商品包装对象
+ * @author chenhongxin
+ *
+ */
+public class ItemsQueryVo {
+
+    // 商品信息
+    private Items items;
+    // 为了系统可扩展性，对原始生成的po对象分装
+    private ItemsCustomer itemsCustomer;
+
+    public Items getItems() {
+        return items;
+    }
+
+    public void setItems(Items items) {
+        this.items = items;
+    }
+
+    public ItemsCustomer getItemsCustomer() {
+        return itemsCustomer;
+    }
+
+    public void setItemsCustomer(ItemsCustomer itemsCustomer) {
+        this.itemsCustomer = itemsCustomer;
+    }
+
+}
+
+3.3.2.mapper.xml文件
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itcast.ssm.mapper.ItemsMapperCustomer">
+
+    <!-- 定义商品查询的sql片段，就是商品查询条件 -->
+    <sql id="query_items_where">
+        <!-- 使用动态sql，通过if判断，满足条件进行sql拼接 -->
+        <!-- 商品查询条件通过ItemsQueryVo包装对象中itemsCustomer熟悉传递 -->
+        <if test="itemsCustomer != null">
+            <if test="itemsCustomer.name != null and itemsCustomer.name != ''" >
+                items.name LIKE '%{itemsCustomer.name}%';
+            </if>
+        </if>
+    </sql>
+
+    <!-- 商品列表查询 -->
+    <!-- parameterType传入包装对象(包装了查询条件)
+        resultType建议使用可扩展对象
+     -->
+    <select id="findItemsList" parameterType="com.itcast.ssm.po.ItemsQueryVo" resultType="com.itcast.ssm.po.ItemsCustomer">
+        select * from items
+        <where>
+            <include refid="query_items_where" />
+        </where>
+        
+    </select>
+
+</mapper>
+3.3.3.配置mapper接口
+public interface ItemsMapperCustomer {
+
+    public List<ItemsCustomer> findItemsList() throws Exception;
+
+}
+
+4.整合service
+4.1.在com.itcast.ssm.service包中编写service接口
+public interface ItemsService {
+
+    public List<ItemsCustomer> findItemsList() throws Exception;
+
+}
+4.2.在com.itcast.ssm.service.impl实现service接口
+public class ItemsServiceImpl implements ItemsService {
+
+    @Autowired
+    private ItemsMapperCustomer itemsMapperCustomer;
+    
+    @Override
+    public List<ItemsCustomer> findItemsList() throws Exception {
+        
+        return itemsMapperCustomer.findItemsList();
+    }
+
+}
+4.3.spring容器配置service(springApplication-service.xml)
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <bean id="itemsService" class="com.itcast.ssm.service.impl.ItemsServiceImpl" />
+
+</beans>
+4.4.事务控制(springApplication-transaction)
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- 事务管理器 对mybatis操作数据库的事务控制，spring使用jdbc的事务控制类 -->
+    <bean id="transactionManager"
+        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!-- 数据源 dataSource在applicationContext-dao.xml中配置了 -->
+        <property name="dataSource" ref="datasource"></property>
+    </bean>
+
+    <!-- 通知 -->
+    <tx:advice id="tvAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <!-- 传播行为 -->
+            <!-- propagation:REQUIRED表示该传播行为必须, SUPPORTS表示该传播行为支持 -->
+            <tx:method name="save*" propagation="REQUIRED" />
+            <tx:method name="insert*" propagation="REQUIRED" />
+            <tx:method name="update*" propagation="REQUIRED" />
+            <tx:method name="find*" propagation="SUPPORTS" read-only="true" />
+        </tx:attributes>
+    </tx:advice>
+    <!-- aop切面 -->
+    <aop:config>
+        <aop:advisor  advice-ref="tvAdvice" pointcut="execution(* com.itcast.ssm.service.*.*(..))" />
+    </aop:config>
+
+</beans>
+
+5.注解使用
+5.1.@RequestMapping
+5.1.1.url映射
+定义controller方法对应的url，进行处理器映射使用
+@RequestMapping(value = "/queryItems")
+public ModelAndView queryItems() {
+    ModelAndView modelAndView = new ModelAndView();
+    try {
+        List<ItemsCustomer> itemsCustomers = itemsService.findItemsList();
+        modelAndView.addObject("itemsCustomers", itemsCustomers);
+        modelAndView.setViewName("/items/itemsList");
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return modelAndView;
+}
+5.1.2.窄化请求映射
+@Controller
+// 为了对url进行分类管理，可以在这里定义路径，最终访问url是根路径+子路径
+// 比如：/items/queryItems.action
+@RequestMapping("/items")
+public class ItemsController {
+}
+5.1.3.限制http请求
+@RequestMapping(value = "/editItem", method = {RequestMethod.POST, RequestMethod.GET})
+public ModelAndView editItem() {
+    ModelAndView modelAndView = new ModelAndView();
+    modelAndView.setViewName("/success");
+    return modelAndView;
+}
+6.controller方法的返回值
+6.1.返回ModelAndView
+需要返回结束时，定义ModelAndView，将Model和View分别进行设置
+6.2.返回String
+如果controller返回string，表示返回逻辑视图名。
+6.2.1.真正视图(jsp路径) = 前缀 + 逻辑视图名 + 后缀
+@RequestMapping(value = "/queryItems")
+public String queryItems(Model model) {
+    try {
+        List<ItemsCustomer> itemsCustomers = itemsService.findItemsList();
+        model.addAttribute("itemsCustomers", itemsCustomers);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return "/items/itemsList";
+}
+6.2.2.redirect重定向
+@RequestMapping(value = "/editItem", method = {RequestMethod.POST, RequestMethod.GET})
+public String editItem() {
+    // 调用service更新商品信息，页面需要将商品信息传到此方法
+    // ...
+    
+    // 重定向
+    return "redirect:queryItems.action";
+}
+6.2.3.forward转发
+通过forward进行页面转发，浏览器地址栏url不变，request可以共享.
+// 转发到某controller
+@RequestMapping(value = "/editItem", method = {RequestMethod.POST, RequestMethod.GET})
+public String editItem() {
+    // 调用service更新商品信息，页面需要将商品信息传到此方法
+    // ...
+    
+    // 重定向
+    return "forward:queryItems.action";
+}
+// 转发到该controller的时候request是一样的
+@RequestMapping(value = "/queryItems")
+public String queryItems(Model model, HttpServletRequest request) {
+    try {
+        List<ItemsCustomer> itemsCustomers = itemsService.findItemsList();
+        model.addAttribute("itemsCustomers", itemsCustomers);
+        String id = request.getParameter("id");
+        System.out.println(id);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return "/items/itemsList";
+}
+
+6.3.返回void
+// 返回一个json数据
+@RequestMapping(value = "/editItem", method = {RequestMethod.POST, RequestMethod.GET})
+public void editItem(HttpServletRequest request, HttpServletResponse response) {
+    try {
+        List<ItemsCustomer> itemsCustomers = itemsService.findItemsList();
+        JSONArray jsonArray = JSONArray.fromObject(itemsCustomers);
+        response.setCharacterEncoding("utf-8");
+        response.setContentType("application/json;charset=utf-8");
+        response.getWriter().write("" + jsonArray.toString());
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+// 解析json
+<script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.min.js"></script>
+<script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
+<script type="text/javascript">
+    $.ajax({
+        url:"/springmvc_mybatis/items/editItem",
+        type:"POST",
+        success:function(data){
+            for(var i = 0; i < data.length;i++){
+                console.log(data[i].name);
+            }
+        }
+    });
+</script>
+7.参数绑定
+7.1.spring参数绑定过程
+从客户端请求key/value数据，经过参数绑定，将key/value数据绑定到controller方法的行参上。
+在springmvc中，接收页面提交的数据是通过方法参数接收，而不是controller类定义成员变量接收
+客户端请求key/value
+
+处理器适配器调用springmvc提供参数绑定组件将key/value数据转换成controller方法的行参
+参数绑定组件：在springmvc早期版本使用PropertyEditor(只能将字符串转换成java对象)
+后期使用convert(进行任意类型的转换)，在特殊情况下需要自定义convert
+
+默认支持的类型：直接在controller方法行参上定义下边类型的对象， 就可以使用这些对象，在参数绑定过程中，如果遇到下边类型直接进行绑定。
+HttpServletRequest、HttpServletResponse、HttpSession、
+Model/ModelMap
+Model是一个接口，ModelMap是一个实现类
+作用：将Model数据填充到request对象
+
+简单类型：
+通过@RequestParam对简单类型的参数进行绑定。
+如果不使用@RequestParam，要求request传入参数名称和controller方法上的行参名称一致，才能够匹配成功
+如果使用@RequestParam，例如以下：
+@RequestParam注解的属性：required:是否必须含有该参数，defaultValue:表示默认值，进入界面的时候默认值
+@RequestMapping(value = "/findItem")
+public ModelAndView findItem(@RequestParam(value = "id", required = false)Integer itemsId) {
+    ModelAndView modelAndView = new ModelAndView();
+    try {
+        // 调用service查询商品信息
+        ItemsCustomer itemsCustomer = itemsService.findItemsById(itemsId);
+        modelAndView.addObject("itemsCustomer", itemsCustomer);
+        modelAndView.setViewName("/items/editItem");
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return modelAndView;
+}
+
+8.pojo绑定
+页面中Input的name和controller的pojo行参中的属性名称一致，将页面中数据绑定到pojo.
+<form id="itemsCustomerForm"
+    action="${pageContext.request.contextPath }/items/editItem"
+    method="post">
+    <input type="hidden" name="id" value="${itemsCustomer.id }" /> 修改商品信息：
+    <table width="100%" border=1>
+        <tr>
+            <td>商品名称</td>
+            <td><input type="text" name="name"
+                value="${itemsCustomer.name }" /></td>
+        </tr>
+        <tr>
+            <td>商品价格</td>
+            <td><input type="text" name="price"
+                value="${itemsCustomer.price }" /></td>
+        </tr>
+        <%-- <tr>
+            <td>商品生产日期</td>
+            <td><input type="text" name="createtime"
+                value="<fmt:formatDate value="${itemsCustomer.createtime}" pattern="yyyy-MM-dd HH:mm:ss"/>" /></td>
+        </tr> --%>
+        <tr>
+            <td>商品简介</td>
+            <td><textarea rows="3" cols="30" name="detail">${itemsCustomer.detail }</textarea>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" align="center"><input type="submit" value="提交" />
+            </td>
+        </tr>
+    </table>
+
+</form>
+@RequestMapping(value = "/editItem")
+public String editItem(Integer id, ItemsCustomer itemsCustomer) {
+    
+    itemsService.updateItems(id, itemsCustomer);
+    
+    return "/success";
+}
+
+问题：
+post乱码
+<!-- post乱码过虑器 -->
+<filter>
+    <filter-name>CharacterEncodingFilter</filter-name>
+    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    <init-param>
+        <param-name>encoding</param-name>
+        <param-value>utf-8</param-value>
+    </init-param>
+</filter>
+<filter-mapping>
+    <filter-name>CharacterEncodingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
+
+springmvc总结：
+springmvc框架：
+DispatcherServlet(前端控制器):接收request，响应response
+HandlerMapping处理器映射器:根据url查找handler处理器，可以通过xml配置或注解
+HandlerAdapter处理器适配器:根据规则执行handler，编写handler时按照HandlerAdapter的要求去编写
+Handler处理器:handler处理器执行后结果是ModelAndView，具体开发时Handler返回方法值类型包括：ModelAndView，String(视图逻辑名)，void(通过在Handler行参中添加request和response，类似原始servlet开发方式。)
+view resolver视图解析器:根据视图逻辑名生成真正的视图(在springmvc中使用view对象表示)
+view视图:jsp页面，仅是显示数据
+
+注解开发：
+使用注解方式的处理器映射器和适配器
+<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter" />
+<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />
+实际开发，使用mvc:annotation-driven代替上邊註解映射器和註解適配器配置<mvc:annotation-driven></mvc:annotation-driven>
+
+@controller注解必须加，作用就是标识类是一个handler处理器
+@requestMapping注解必须要加，作用：
+1.对url和handler方法进行映射
+2.可以窄化请求映射，设置Handler类的根路径(分类)，url就是：根路径+子路径
+3.可以限制http请求方法
+
+映射成功后，springmvc框架生成一个Handler对象，对象只包括一个映射成功的method
+
+注解开发中参数绑定：
+    将request请求过来的key/value的数据，通过转换，将key/value串转成行参，将转换后的结果传给行参
+springmvc所支持参数绑定：
+1.默认支持很多类型，HttpServletRequest、response、session、Model/ModelMap(将模型数据填充到request域)
+2.支持简单数据类型，整型、字符串、日期
+    只要保证request请求的参数名和行参名称不一致，可以使用@RequestParam(指定request请求的参数名)，@RequestParam加在行参的前边。
+3.支持pojo类型
+    只要保证request请求的参数名称和pojo中的属性名一致，自动将request请求的参数设置到pojo的属性中
+    注意：行参中即有pojo类型又有简单类型，参数绑定互不影响。
+    自定义参数绑定：
+        日期类型绑定自定义：
+        定义的Converter<源类型，目标类型>接口实现类，比如：
+        Converter<String, Date>表示：将请求的日期数据串转成java中的日期类型
+        注意：要转换的目标类型一定和接收的pojo中的属性类型一致
+        将定义的Converter实现类注入到处理器适配器中
+        <!--注解适配器 -->
+        <bean
+            class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+             <property name="webBindingInitializer" ref="customBinder"></property> 
+        </bean>
+        
+        <!-- 自定义webBinder -->
+        <bean id="customBinder"
+            class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
+            <property name="conversionService" ref="conversionService" />
+        </bean>
+        <!-- conversionService -->
+        <bean id="conversionService"
+            class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+            <!-- 转换器 -->
+            <property name="converters">
+                <list>
+                    <bean class="cn.itcast.ssm.controller.converter.CustomDateConverter"/>
+                </list>
+            </property>
+        </bean>
+
+springmvc和struts2的区别：
+springmvc面向方法开发(service接口开发方式)，struts2面向类开发
+springmvc可以单例开发，struts2只能多例开发
+
+

@@ -1,0 +1,74 @@
+什么是spring框架
+1.Spring是一个开源框架，为了解决企业应用开发的复杂性而创建的，但现在已经不止应用与企业应用
+2.是一个轻量级的控制反转ioc和面向切面aop的容器框架
+为什么使用spring
+简单、方便、快捷
+
+Spring简介
+适用范围
+构建企业应用(SpringMVC+Spring+Hibernate/ibatis)
+单独使用Bean容器(Bean管理)
+单独使用AOP进行切面处理
+其他的Spring功能，如：对消息的支持等
+在互联网中的应用
+
+IOC(配置、注解)
+Bean(配置，注解)
+AOP(配置、注解、AspectJ、API)
+
+如何学习Spring
+掌握用法
+深入理解
+不断实践
+反复总结
+再次深入理解与实践
+
+http://spring.io/
+http://projects.spring.io/spring-framework
+
+
+
+
+
+
+// 配置datasource
+<!-- 引入配置文件 -->
+<context:property-placeholder location="classpath:db.properties" />
+
+<!-- 配置数据源 -->
+<bean id="datasource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+    <property name="driverClass" value="${jdbc.driverClass}" />
+    <property name="jdbcUrl" value="${jdbc.jdbcUrl}" />
+    <property name="user" value="${jdbc.user}" />
+    <property name="password" value="${jdbc.password}" />
+</bean>
+
+<!-- 配置session工厂 -->
+<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    <property name="dataSource" ref="datasource"></property>
+    <!-- 加载mybatis.cfg.xml文件 -->
+    <property name="configLocation" value="classpath:mybatis.cfg.xml"></property>
+    <!-- 自动扫描需要定义类别名的包，将包内的JAVA类的类名作为类别名 -->
+    <property name="typeAliasesPackage" value="com.app.entity"></property>
+</bean>
+
+
+
+
+
+
+
+
+Aop的术语：
+JoinPoint
+PointCut
+Advice
+Introduction
+Target
+Weaving
+Proxy
+Aspect
+
+
+
+

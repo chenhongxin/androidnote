@@ -1,0 +1,30 @@
+我们学习javaee的反射有几个要点：
+1.搞清楚class，反射class对象，获取Class
+Class cla = Class.forName("类的位置"); // 加载类
+cla.newInstance(); // 获取对象 如同初始化构造函数
+2.获取所有方法
+Method[] ms = cla.getMethods();
+for(int i = 0;i < ms.length;i++){
+    // 获取返回类型的名称
+    ms[i].getReturnType().getName();
+    ms[i].getName();
+    Class[] paramTypes = ms[i].getParameterTypes();
+    for(Class pc : paramTypes){
+        pc.getName();
+    }
+}
+3.获取成员信息
+Filed[] filed = cla.getDeclaredField();
+for(int i = 0;i < field.length;i++){
+    String typeName = filed[i].getTypeName();
+    String name = field[i].getName();
+}
+4.获取构造函数
+Constructor constructor = cla.getDeclaredConstructors();
+for(int i = 0;i < field.length;i++){
+    String typeName = filed[i].getTypeName();
+    String name = field[i].getName();
+}
+
+技术:
+使用PullRefresh实现上拉下拉刷新、EventBus交互数据、使用第三方微信登录、微信支付、支付宝支付、银联支付，使用jni对图片优化，使用traceview对布局进行优化，OkHttps对头加密与服务器交互

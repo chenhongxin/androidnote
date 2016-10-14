@@ -1,7 +1,7 @@
 上传测试包
 http://10.1.156.245:9090/login.htm
 功能测试
-http://xcs.zentaopm.com/user-login.html242 
+http://xcs.zentaopm.com/user-login.html242
 chanpin chanpin123
 后台
 http://10.1.156.240:8088/property/repair_list.htm#
@@ -12,6 +12,7 @@ http://dev.xclife.cn/
 
 账号: pms_test  密码:123456
 http://10.1.156.240:8083/ver/version_list.htm;jsessionid=6A2D3ECC3C7D85F1D23EDB13F44BE7B4
+http://panpan.8799896.com:8083/v.php?sid=80001&aid=29
 
 友盟账号
 ios_crashlog_2015@163.com
@@ -21,22 +22,7 @@ http://10.1.156.240:8088/message/push_message.htm#
 
 劝君莫惜金缕衣,劝君惜取少年时.花开堪折直须折,莫待无花空折枝.
 
-
-注: 一个app 被设置为 persistent 后，将很难被low memory kill 杀掉(oom_adj=-12)，请在设置之前仔细确认是否必须，否则将浪费掉memory。
-
-如果你后期觉得可以，我后期共享视频给你，我在网上报名的，到时候1个人50块钱就可以买，150块钱可以售后服务
-
-
-严重性	代码	说明	项目	文件	行	禁止显示状态
-错误	C4996	'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.	FirstProject	f:\candc++\c++\project\firstproject\firstproject\01.c	25	
-
-
-apkpatch.bat -f new.apk -t old.apk -o output1 -k debug.keystore -p android -a androiddebugkey -e android
-
-abominable 极其厌恶、极其讨厌
-aborigine (澳大利亚)土著居民
-abort 使...终止 使...流产，打掉，终止
-abortion 人工流产，堕胎
+  
 abortive 流产的，夭折的
 abound 大量存在、盛产
 about 关于、怎么样
@@ -46,30 +32,63 @@ above 在上面
 del lock /q/s
 
 
+需求java高级程序员1名，3年以上，要求1.熟练dubbo，redis，mysql；2..能够部署tomcat，熟练linux操作；3.spring mvc，mybatis；
+4.有电商经验; 5.熟悉linux环境下开发
+公司地址：上海普陀区金山江路附近z
 
 
+先介绍我自己：13年开始从事计算机软件，做过电商、房地产、教育、通信等产品，在安卓、后台、前端三方面我都可以帮助，当然我擅长安卓制作，安卓我可以独当一面，我也有一个梦想，我想成为一个优秀的工程师，不管结果如何，如果我加入了我会全力以赴去做好这件事情，而我对公司的要求是：
+1.我们要了解到大家的能力与优势
+2.对产品至少要了解，不可隐瞒，对此我可以签1年的合同
+3.公司每月给予8000，在投资之前我全额投资，但是要有一个投资证据，如打印投资条款、投资人、证明人
+4.占用%5的股份，在天使轮和A轮不会被稀释，需要入档案
+5.公司保证在多久内能够变得更好，我们在什么时候能改善现在
+6.后期如果公司发生问题该如何解决，公司可否定制规定
+7.公司未来规划清晰，在何时项目达到什么样的指标，需要招什么人才
+8.公司需要规划时间让人才有足够时间去提升自己能力
 
-if (tab == 1) {
-				mTab1.setTextColor(context.getResources().getColor(android.R.color.white));
-				mTab2.setTextColor(context.getResources().getColorStateList(
-						R.drawable.color_selector_tv_gray));
-				mTab1.setBackgroundResource(R.drawable.shape_round_left_gray);
-				mTab2.setBackgroundResource(R.drawable.common_round_right_white);
-				tvRed.setVisibility(View.GONE);
-				fragmentTransaction.show(fragments.get(0)).commit();
-			} else {
-				mTab1.setTextColor(context.getResources().getColorStateList(
-						R.drawable.color_selector_tv_gray));
-				mTab2.setTextColor(context.getResources().getColor(android.R.color.white));
-				mTab1.setBackgroundResource(R.drawable.common_round_left_white);
-				mTab2.setBackgroundResource(R.drawable.shape_round_right_gray);
-				fragmentTransaction.show(fragments.get(1)).commit();
-			}
+http://v.itcast.cn/course/8.html
+
+asm
+cglib
+
+急招java    薪资10-20K
+1、有3年以上java开发经验。
+2、精通面向对象技术，设计模式，UML技术、 熟悉J2EE技术架构体系；
+3、 掌握市面常用开源框架，对spring,hibernate,mybaits有比较深入的理解。
+4、精通Java技术架构，熟悉WebService、分布式、多线程等高性能架构相关开发技术;
+5、掌握主要http服务器web服务的配置和使用
+6、使用过dubbo,zookeeper等优先考虑
+7、了解容器化技术，对docker等有实际经验者优先考虑
+8、深入理解缓存和nosql技术，对nosql有实际经验者优先考虑
+9、做过jenkins二次开发的有效考虑
+10、熟练使用Oracle、MySQL等主流数据库； 
+11、熟悉CRM、ERP行业企业应用开发经验优先
 
 
+上海招聘java工程师(金融项目)
+* 2年及以上Java开发经验
+* 会B/S，SSH，HTML等Web技术
+* 长期，包住
+* 地点：黄浦区南京路
+有意向请发简历到邮箱：Sunday@sfytech.com或直接小窗我，谢谢！
 
 
+主要功能&服务：
+【4008房屋维修】轻轻一点，让您的房屋维修更快捷。（仅部分小区）
+【优惠券】除了用橙贝积分抵扣现金，更提供优惠券，现金立减或者折扣优惠，让您一省再省。
+【小橙开门】通过手机蓝牙感应，在30米可用范围内自动开门，为您省去忘带门禁卡的烦恼；同时，拥有访客通行的功能，让您的亲朋好友轻松到访。（暂仅支持部分小区）
+【摇减免】摇出福利，摇出优惠，想要知道自己的手气有多好，那就每天都来摇一摇吧！
+【物业服务】物业信息一目了然，方便随时联系；最新物业公告即时查看；物业报修一键提交，报修状态和反馈实时跟踪。
+【物业费缴纳】物业费账单线上查询并缴纳，还能用积分抵扣，便利优惠！
+【水电煤缴费】线上缴纳水电煤费用，让您的生活更加方便。
+【生活缴费】充值手机话费，方便又实用！
+【家政服务】家庭保洁、家电清洗、管道疏通、玻璃清洗等家政服务，价格透明，服务规范！
+【生活购】米面粮油、家庭清洁等日常生活用品，品优价廉有保障，极速免费送上门！
+【橙社汇】邻里间交流互动社交平台，社区八卦集结地，还有不定期活动送福利。
+【橙社日历】记录你的社区点滴生活，日历形式有趣展现！
+【橙贝积分】抵扣物业、家政、生活购订单金额，橙贝积分当钱花，让你的生活省到家！想要获得更多橙贝？那就多多使用以上功能和服务哦~
 
-
-
-
+其它功能：
+【新城通行证】新城互联，一证通行，一个账号就能登录所有新城APP。
+【微信登录】使用微信账号也能登录新橙社。

@@ -1,0 +1,275 @@
+// 单元测试
+package com.wangbingan.db;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import com.wangbinga.util.RedisUtil;
+
+import redis.clients.jedis.Jedis;
+
+/**
+ * Redis测试
+ * 
+ * @author AK
+ * 
+ */
+public class RedisTest {
+
+    private Jedis jedis;
+
+    // private String name = "Usher";
+    // private String age = "44";
+    // private String sex = "male";
+
+    /**
+     * 测试用例启动前运行
+     */
+    @Before
+    public void setup() {
+        // 服务器ip
+        String ip = "60.28.29.22";
+        // 服务器端口
+        int port = 6379;
+        // 授权密码
+        String password = "Ytw-2015#Ehsan";
+        // 链接redis服务器
+        jedis = new Jedis(ip, port);
+        // 授权
+        jedis.auth(password);
+    }
+
+    /**
+     * String测试
+     */
+    @Test
+    public void stringTest() {
+        // 添加数据
+        jedis.set("name", "Usher");
+
+        System.out.println("添加数据:" + jedis.get("name") + "\n");
+        // 拼接数据
+        jedis.append("name", "\040is very cool!");
+
+        System.out.println("拼接数据:" + jedis.get("name") + "\n");
+        // 删除数据
+        jedis.del("name");
+
+        System.out.println("删除数据:" + jedis.get("name") + "\n");
+
+        // 设置多个数据
+        jedis.mset("name", "Usher", "age", "24", "sex", "male");
+
+        // 某个数据+
+        jedis.incrBy("age", 10);
+
+        System.out.println("姓名:" + jedis.get("name") + "\040年龄:"
+                + jedis.get("age") + "\040性别:" + jedis.get("sex") + "\n");
+    }
+
+    /**
+     * Map测试
+     */
+    @Test
+    public void mapTest() {
+        Map<String, String> map = new HashMap<String, String>();
+        // 添加数据
+        map.put("name", "Usher");
+        map.put("age", "24");
+        map.put("sex", "male");
+        // 添加到redis中
+        jedis.hmset("Information", map);
+
+        System.out.println("添加Map数据:"
+                + jedis.hmget("Information", "name", "age", "sex") + "\n");
+        // 删除数据
+        jedis.hdel("Information", "name");
+
+        System.out.println("删除Map数据:" + jedis.hmget("Information", "name")
+                + "\n");
+        // 返回key=Information的值的个数
+        System.out.println("返回key=Information的值的个数:"
+                + jedis.hlen("Information") + "\n");
+        // 判断是否存在key=Information的对象
+        System.out.println("判断是否存在key=Information的对象:"
+                + jedis.exists("Information") + "\n");
+        // 返回map对象中的所有key值
+        System.out.println("返回map对象中的所有key值:" + jedis.hkeys("Information")
+                + "\n");
+        // 返回map对象中的所有value值
+        System.out.println("返回map对象中的所有value值:" + jedis.hvals("Information")
+                + "\n");
+        // 循环迭代key
+        Iterator<String> it = jedis.hkeys("Information").iterator();
+        // 判断是否有元素存在
+        while (it.hasNext()) {
+            // 获取元素key
+            String key = it.next();
+            System.out.println("返回key为" + key + "的值:"
+                    + jedis.hmget("Information", key) + "\n");
+        }
+    }
+
+    /**
+     * List测试
+     */
+    @Test
+    public void listTest() {
+        // 先清空List
+        jedis.del("Information");
+        // 查看List是否清空
+        System.out.println("Lis[清空后]t:" + jedis.lrange("Information", 0, -1)
+                + "\n");
+        // 添加数据
+        jedis.lpush("Information", "Usher");
+        jedis.lpush("Information", "sex");
+        jedis.lpush("Information", "age");
+        // 查看List元素
+        System.out.println("List[添加后]:" + jedis.lrange("Information", 0, -1)
+                + "\n");
+        // 清空List
+        jedis.del("Information");
+        // 添加数据
+        jedis.lpush("Information", "Elliot");
+        jedis.lpush("Information", "sex");
+        jedis.lpush("Information", "age");
+        // 查看List元素
+        System.out.println("List[清空+添加]:" + jedis.lrange("Information", 0, -1)
+                + "\n");
+    }
+
+    /**
+     * set测试
+     */
+    @Test
+    public void setTest() {
+        // 添加元素
+        jedis.sadd("user", "Usher");
+        jedis.sadd("user", "sex");
+        jedis.sadd("user", "age");
+        System.out.println("Key的value值[删除前]:" + jedis.smembers("user") + "\n");
+        // 删除元素
+        jedis.srem("user", "age");
+        // 所有元素的value()
+        System.out.println("Key的value值[删除后]:" + jedis.smembers("user") + "\n");
+        // 判断值是否存在
+        System.out.println("判断值是否存在:" + jedis.sismember("user", "age") + "\n");
+        // 返回集合元素的个数
+        System.out.println("返回集合元素的个数:" + jedis.scard("user") + "\n");
+        // 返回随机元素
+        System.out.println("返回随机元素:" + jedis.srandmember("user") + "\n");
+    }
+
+    /**
+     * jedis 排序
+     */
+    @Test
+    public void sortTest() {
+        // 添加元素
+        jedis.rpush("sort", "1");
+        jedis.lpush("sort", "2");
+        jedis.lpush("sort", "3");
+        jedis.lpush("sort", "4");
+        System.out.println("元素:" + jedis.lrange("sort", 0, -1) + "\n");
+        // 排序
+        System.out.println("排序:" + jedis.sort("sort") + "\n");
+        // jedis.sort("sort");
+        // 再输出一次
+        // System.out.println("元素:" + jedis.lrange("sort", 0, -1) + "\n");
+    }
+
+    /**
+     * 测试中文
+     */
+    @Test
+    public void chineseTest() {
+        RedisUtil.getJedis().set("name", "中文测试");
+        System.out.println(RedisUtil.getJedis().get("name"));
+    }
+}
+
+// 连接池
+package com.wangbinga.util;
+
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
+
+/**
+ * Redis连接池
+ * 
+ * @author AK
+ * 
+ */
+public final class RedisUtil {
+    // Redis服务器IP
+    private static String ADDR = "60.28.29.22";
+    // Redis的端口号
+    private static int PORT = 6379;
+    // 访问密码
+    private static String AUTH = "Ytw-2015#Ehsan";
+    // 可用连接实例的最大数目，默认值为8；
+    // 如果赋值为-1，则表示不限制；如果pool已经分配了maxActive个jedis实例，则此时pool的状态为exhausted(耗尽)。
+    private static int MAX_ACTIVE = 1024;
+    // 控制一个pool最多有多少个状态为idle(空闲的)的jedis实例，默认值也是8。
+    private static int MAX_IDLE = 200;
+    // 等待可用连接的最大时间，单位毫秒，默认值为-1，表示永不超时。如果超过等待时间，则直接抛出JedisConnectionException；
+    private static long MAX_WAIT = 10000;
+    // 最大延迟时间
+    private static int TIMEOUT = 10000;
+    // 在borrow一个jedis实例时，是否提前进行validate操作；如果为true，则得到的jedis实例均是可用的；
+    private static boolean TEST_ON_BORROW = true;
+
+    private static JedisPool jedisPool = null;
+
+    /**
+     * 初始化Redis连接池
+     */
+    static {
+        try {
+            JedisPoolConfig config = new JedisPoolConfig();
+            config.setMaxActive(MAX_ACTIVE);
+            config.setMaxIdle(MAX_IDLE);
+            config.setMaxWait(MAX_WAIT);
+            config.setTestOnBorrow(TEST_ON_BORROW);
+            jedisPool = new JedisPool(config, ADDR, PORT, TIMEOUT, AUTH);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 获取Jedis实例
+     * 
+     * @return
+     */
+    public synchronized static Jedis getJedis() {
+        try {
+            if (jedisPool != null) {
+                Jedis resource = jedisPool.getResource();
+                return resource;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * 释放jedis资源
+     * 
+     * @param jedis
+     */
+    public static void returnResource(final Jedis jedis) {
+        if (jedis != null) {
+            jedisPool.returnResource(jedis);
+        }
+    }
+}
