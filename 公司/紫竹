@@ -16,30 +16,32 @@ shangshow:账号
 星咔：15021587863/123456
 
 蒲公英
-www.pgyer.com 
+www.pgyer.com
 
 账户
 zhuheng@jinznet.com
 密码
 qwe123456
 
-NIMClient.getService(AuthServiceObserver.class).observeOnlineStatus(new Observer<StatusCode> () {
-            public void onEvent(StatusCode status) {
-                // 判断在线状态，如果为被其他端踢掉，做登出操作
-                boolean reLogin = status.shouldReLogin();
-                Log.i("json", reLogin + "");
-                if(reLogin){
-                    loginOut();
-                }
-            }
-        }, true);
+后台
+http://114.55.32.189:8080/user/login
+admin
+!qaz2wsxshangshow
 
-{"applayUserId":"149","status":"DEL","businessUserId":106,"userId":149}
+数据库
+JINZNET
+120.55.82.96
+3306
+root
+!qaz2wsx54321
+
 
 D:\F\android\project\jinznet\asproject\update\shangshow-app-android\app\shangshow.jks
 shangshow
 Shangshow-live_tv
 
-{"applayUserId":"188","status":"DEL","businessUserId":187,"userId":188}
 
-{"businessUserId":"186","status":"EBL","userBusinessCooperationId":"9","userId":"187"}
+
+pageNum = 1
+pageSize = 10
+userId = 187
