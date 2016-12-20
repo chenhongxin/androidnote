@@ -1,0 +1,194 @@
+1、回顾
+上一篇我们讲ArrayList，关于ArrayList我们讲了构造函数、增删该查、优化、迭代器等，主要内容：MIN_CAPACITY_INCREMENT(开始容量)，size(ArrayList的长度)，array(开辟空间数组)
+添加对象
+	add(E object)
+	add(int index, E object)
+	addAll(Collection<? extends E> collection)
+	addAll(int index, Collection<? extends E> collection)
+删除对象
+	clear()
+优化数组
+	ensureCapacity(int minimumCapacity)
+查询
+	get(int index)
+	contains(Object object)
+	indexOf(Object object)
+	lastIndexOf(Object object)
+删除
+	remove(int index)
+	remove(Object object)
+	removeRange(int fromIndex, int toIndex)
+修改
+	set(int index, E object)
+
+迭代器
+	iterator()
+	hasNext()
+	next()
+	remove()
+这上面的方法是最主要的，有增删改查操作
+
+2、概述
+这篇文章让大家熟悉LinkedList，让大家能优化、灵活使用LinkedList，LinkedList底层使用链表模式进行构造，讲LinkedList之前我会教大家一个链表模式。
+首先介绍LinkedList有什么内容：
+1、平常增加删改：
+addFirst(E e) addLast(E e) add(E e) addAll(Collection<? extends E> c) addAll(int index, Collection<? extends E> c) add(int index, E element)
+
+remove(Object o) remove(int index) remove() removeFirst() removeLast() clear()
+
+set(int index, E element)
+
+get(int index) getFirst() getLast() indexOf(Object o) lastIndexOf(Object o) contains(Object o)
+
+2、阻塞队列：
+peek() element() poll() offer(E e) offerFirst(E e) offerLast(E e)
+peekFirst() peekLast() pollFirst() pollLast() push(E e) pop()
+
+那么接下来我们先来讲链表：
+struct node {
+	char data;
+	node *next;
+};
+
+node *head;
+int n = 0; // 链表长度
+
+/**
+	建立链表
+*/
+void createList() {
+	node *p, *s;
+	char x;
+	int z = 1;
+	p = head;
+	cout << "\n\t建立一个链表" << endl;
+	cout << "说明：请逐个输入字符，结束标记#" << endl;
+	while (z) {
+		cout << "\t\t输入：";
+		cin >> x;
+		if (x != '#') {
+			s = new node;
+			n++;
+			s->data = x;
+			p->next = s;
+			s->next = NULL;
+			p = s;
+		} else {
+			p = head;
+			while (p->next != NULL) {
+				cout << "\t" << p->next->data;
+				p = p->next;
+			}
+			z = 0;
+		}
+	}
+}
+
+/**
+	插入节点元素
+*/
+void insList(int i, char x) {
+	node *s, *p;
+	int j;
+	s = new node;
+	s->data = x;
+	if (i == 0) {
+		cout << "\t\t插入位置非法!\n";
+	} else {
+		p = head;
+		j = 1;
+		while (p && j < i) {
+			j++;
+			p = p->next;
+		}
+		if (p != NULL) {
+			n++;
+			s->next = p->next;
+			p->next = s;
+		} else {
+			cout << "\t\t插入位置非法！\n";
+		}
+	}
+}
+
+void delList(char x) {
+	node *p, *q;
+	if (head == NULL) {
+		cout << "\t\t链表下溢！\n";
+		return;
+	}
+	if (head->next == NULL) {
+		cout << "\t\t链表已经为空！" << endl;
+		return;
+	}
+	q = head;
+	p = head->next;
+	while (p != NULL && p->data != x) {
+		q = p;
+		p = p->next;
+	}
+	if (p != NULL) {
+		q->next = p->next;
+		delete p;
+		n--;
+		cout << "\t\t" << x << "已经被删除！" << endl;
+	} else {
+		cout << "\t\t未找到！\n";
+	}
+}
+
+void showList() {
+	node *p = head;
+	cout << "\n\t\t显示链表的所有元素：";
+	if (head->next == NULL || p == NULL) {
+		cout << "\n\t\t链表为空！\n";
+	} else {
+		cout << "\n\t\t" << endl;
+		while (p->next != NULL) {
+			cout << p->next->data << "\t";
+			p = p->next;
+		}
+		cout << endl;
+	}
+}
+我们先从创建Node链表开始
+struct node {
+	char data;
+	node *next;
+};
+下面我给一张图
+
+插图
+
+实际上上面的链表添加、删除跟System.arrayCopy相似，添加就往后移一位然后往位置插入数据，删除就往前移一位然后就删除最后一个数据
+
+学会了C的链表模式之后，接下来我们来看Java的LinkedList链表模式如何使用？
+1、首先我们先来看新增元素：
+如何新增一个元素呢？我们了解链表，假如要添加一个元素，那么我们应该如何做呢？看上面的图，我们需要往最后链接一个元素，那么源码是如何做的呢？
+当执行添加操作，实际上是执行了linkLast方法来链接至最后一个元素
+public boolean add(E e) {
+    linkLast(e);
+    return true;
+}
+final Node<E> l = last;获取到最后一个元素，刚开始添加的时候last是null的，因为public LinkedList() {}构造函数没有去帮我们初始化元素，那么会执行first = newNode，把新建的节点赋给首节点，last = newNode，而且把新建的节点赋给最后一个节点，第二次添加让最后节点连接l.next = newNode，让最后节点的下一个节点指向新节点，结果就达到每添加一个节点，就让最新的节点
+void linkLast(E e) {
+    final Node<E> l = last;
+    final Node<E> newNode = new Node<>(l, e, null);
+    last = newNode;
+    if (l == null)
+        first = newNode;
+    else
+        l.next = newNode;
+    size++;
+    modCount++;
+}
+
+
+
+
+
+
+
+
+
+

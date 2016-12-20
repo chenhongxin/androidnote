@@ -1,0 +1,17 @@
+int[] ids = { 1, 2, 3, 4, 5, 6 };
+int index = 0;
+int s = 5;
+System.arraycopy(ids, index, ids, index + 1, s - index);
+System.out.println(Arrays.toString(ids)); // [1, 1, 2, 3, 4, 5]
+解析源码：
+	arraycopy(Object src, int srcPos, Object dst, int dstPos, int length);
+第一个参数：
+	src：将复制的对象
+第二个参数：
+	srcPos：复制起点
+第三个参数：
+	dst：粘贴对象
+第四个参数：
+	dstPos：粘贴起点
+第五个参数：
+	length：复制的长度
