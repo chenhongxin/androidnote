@@ -2,7 +2,11 @@ http://114.55.32.189:82/zentao/my/
 用户名：taolong
 密码：123123
 
+showdoc服务器接口
 http://showdoc.jinznet.com/index.php?s=/showliveapp&page_id=132
+
+项目管理工具
+https://worktile.com 
 
 shangshow:账号
 测试账号
@@ -41,7 +45,59 @@ shangshow
 Shangshow-live_tv
 
 
+typedef NS_ENUM(NSInteger,SSCustomAttachType)
+{
+    SSCustomAttachTypePresent = 5,//礼物
+    SSCustomAttachTypeLike = 6,//赞
+    SSCustomAttachTypeDanMu = 7,//弹幕
+    SSCustomAttachTypeText = 8,//群聊
+};
 
-pageNum = 1
-pageSize = 10
-userId = 187
+
+//key
+#define NTESCMType         @"type"
+#define NTESCMData         @"data"
+#define KEY_PRESENT  @"present"
+#define KEY_COUNT  @"count"
+#define KEY_TEXT @"text"
+#define KEY_DANMU @"text"
+#define KEY_SEND_USER  @"send_user"
+
+#endif /* SSCustomAttachDefine_h */
+
+1.直播内容
+    1.1.礼物修改金钱
+    1.2.发礼物总金额
+    1.3.修改客户端加载图
+    1.4.订单功能完善
+    1.5.图片动画效果
+    1.6.点播功能
+2.用户内容
+    2.1.修改订单
+
+
+蛋糕:11
+白巧克力：7
+
+
+JSBridge://bridge:732889388/showToast?{"msg":"Hello JSBridge"}
+
+皮肤检测
+了解业务后解决以下功能
+记录
+肤质测试、肤质测试PK
+自拍
+蓝牙连接
+
+584100e4aed1793e7f0000e9
+
+皮肤检测包
+AppID:wx2cb6218af15a807d
+AppSecret:fd58997c6c8f7c6fa5feb893f52010cf
+
+AB:8C:59:33:B1:37:5B:7E:25:14:91:09:40:5C:69:1C
+
+这是一个吸粉的app，可以让每个平台增加他们的粉丝通过发红包模式
+
+
+    <include layout="@layout/layout_tab_top_banner_pager" />
