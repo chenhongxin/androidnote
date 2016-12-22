@@ -170,7 +170,9 @@ public boolean add(E e) {
     linkLast(e);
     return true;
 }
-final Node<E> l = last;获取到最后一个元素，刚开始添加的时候last是null的，因为public LinkedList() {}构造函数没有去帮我们初始化元素，那么会执行first = newNode，把新建的节点赋给首节点，last = newNode，而且把新建的节点赋给最后一个节点，第二次添加让最后节点连接l.next = newNode，让最后节点的下一个节点指向新节点，结果就达到每添加一个节点，就让最新的节点
+final Node<E> l = last;获取到最后一个元素，刚开始添加的时候last是null的，因为public LinkedList() {}构造函数没有去帮我们初始化元素，所以刚开始first、last都是为null，接下来我们来看linkLast函数源码：
+	1.拿到最后元素，首次创建last、first为null，创建新的节点newNode赋给首节点和最后节点
+	2.创建新节点让最后一个节点作为新节点的前一个，因为新创建的节点一定是最后一个节点，所以先获取到最后一个节点让新节点的前一个节点指向之前的最后节点，然后把新建的节点赋给最后节点，表示新节点创建成功，然后让前一个节点的next一个节点指向新节点
 void linkLast(E e) {
     final Node<E> l = last;
     final Node<E> newNode = new Node<>(l, e, null);
@@ -182,6 +184,123 @@ void linkLast(E e) {
     size++;
     modCount++;
 }
+
+下面是我创建的一个例子：
+class LinkedArray<E> {
+	transient int size = 0;
+	transient Node<E> last;
+	transient Node<E> first;
+
+	void add(E e) {
+		final Node<E> l = last;
+		final Node<E> newNode = new Node<>(l, e, null);
+		last = newNode;
+		if (l == null)
+			first = newNode;
+		else
+			l.next = newNode;
+		size++;
+	}
+}
+
+class Node<E> {
+	E item;
+	Node<E> next;
+	Node<E> prev;
+
+	Node(Node<E> prev, E element, Node<E> next) {
+		this.item = element;
+		this.next = next;
+		this.prev = prev;
+	}
+
+}
+
+public static void main(String[] args) {
+	LinkedArray<String> linkedArray = new LinkedArray<>();
+	linkedArray.add("a");
+	linkedArray.add("b");
+	linkedArray.add("c");
+	linkedArray.add("d");
+}
+上面的例子你们可以调试一下，一个链表是如何连接起来的，我们也可以联想：假如删除元素我们要怎么删除，遍历一个集合我们又该怎么做，那么接下来我们来讲删除和遍历
+
+删除一个节点：
+public E removeFirst() {
+    final Node<E> f = first;
+    if (f == null)
+        throw new NoSuchElementException();
+    return unlinkFirst(f);
+}
+
+private E unlinkFirst(Node<E> f) {
+    // assert f == first && f != null;
+    final E element = f.item;
+    final Node<E> next = f.next;
+    f.item = null;
+    f.next = null; // help GC
+    first = next;
+    if (next == null)
+        last = null;
+    else
+        next.prev = null;
+    size--;
+    modCount++;
+    return element;
+}
+LinkedList是如何删除一个节点的呢？我们来回想System.arrayCopy，删除一个节点？将后面的节点往前移一个节点
+final Node<E> next = f.next，首先拿到当前节点的next节点，f.item = null，f.next = null置空后面的节点，
+if (next == null)
+    last = null;
+else
+    next.prev = null;
+如果next节点为空，那么就把最后节点置空，如前一个果next不为null就把前一个元素置空，因为前一个元素已被删除
+
+删除最后节点则相反
+private E unlinkLast(Node<E> l) {
+    // assert l == last && l != null;
+    final E element = l.item;
+    final Node<E> prev = l.prev;
+    l.item = null;
+    l.prev = null; // help GC
+    last = prev;
+    if (prev == null)
+        first = null;
+    else
+        prev.next = null;
+    size--;
+    modCount++;
+    return element;
+}
+
+删除一个节点，假如你要删除一个节点你会怎么做，有三个节点，a、b、c，我们删除a，由于a没有前一个，所以 获取节点的上一个和下一个节点，判断当前节点是首节点或最后节点，如果是首节点，那么把下一个节点直接覆盖首节点，如果是尾节点，那么把前一个节点赋给最后节点，
+E unlink(Node<E> x) {
+    // assert x != null;
+    final E element = x.item;
+    final Node<E> next = x.next;
+    final Node<E> prev = x.prev;
+
+    if (prev == null) {
+        first = next;
+    } else {
+        prev.next = next;
+        x.prev = null;
+    }
+
+    if (next == null) {
+        last = prev;
+    } else {
+        next.prev = prev;
+        x.next = null;
+    }
+
+    x.item = null;
+    size--;
+    modCount++;
+    return element;
+}
+
+
 
 
 
