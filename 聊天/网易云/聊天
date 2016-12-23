@@ -1,0 +1,57 @@
+1.发送消息
+IMMessage message = MessageBuilder.createTextMessage("187", SessionTypeEnum.P2P, "测试");
+NIMClient.getService(MsgService.class).sendMessage(message, false);
+
+2.接收消息
+Observer<List<IMMessage>> incomingMessageObserver =
+        new Observer<List<IMMessage>>() {
+            @Override
+            public void onEvent(List<IMMessage> messages) {
+                // 处理新收到的消息，为了上传处理方便，SDK 保证参数 messages 全部来自同一个聊天对象。
+                if(messages != null){
+
+                }
+            }
+        };
+NIMClient.getService(MsgServiceObserve.class)
+        .observeReceiveMessage(incomingMessageObserver, true);
+
+3.最近消息
+NIMClient.getService(MsgService.class).queryRecentContacts()
+	.setCallback(new RequestCallbackWrapper<List<RecentContact>>() {
+	    @Override
+	    public void onResult(int code, List<RecentContact> recents, Throwable e) {
+	        // recents参数即为最近联系人列表（最近会话列表）
+	    }
+});
+
+for(final IMMessage imMessage : messages){
+                                final String account = imMessage.getFromAccount();
+                                final String message = imMessage.getContent();
+                                final String time = DateUtils.formatDisplayTime(imMessage.getTime());
+                                userModel.getUserInfo(Long.parseLong(account), new Callback<UserInfo>() {
+                                    @Override
+                                    public void onSuccess(UserInfo userInfo) {
+                                        PrivateLetter privateLetter = new PrivateLetter();
+                                        privateLetter.setMessage(message);
+                                        privateLetter.setTime(time);
+                                        privateLetter.setImMessage(imMessage);
+                                        privateLetter.setUserInfo(userInfo);
+                                        privateLetters.add(privateLetter);
+                                        messageAdapter.add(privateLetter);
+                                    }
+
+                                    @Override
+                                    public void onFailure(int resultCode, String message) {
+
+                                    }
+                                }, false);
+                            }
+
+4.获取聊天记录
+NIMClient.getService(MsgService.class).pullMessageHistory(privateLetters.get(position).getImMessage(), 100, false).setCallback(new RequestCallbackWrapper<List<IMMessage>>() {
+                    @Override
+                    public void onResult(int i, List<IMMessage> imMessages, Throwable throwable) {
+
+                    }
+                });

@@ -1,0 +1,101 @@
+
+//    // 蓝牙
+//    private ZizhuHandler mHandler;
+//    private BluetoothLeClass mBLE;
+//    private BluetoothDevice bluetoothDevice;
+//    private BluetoothAdapter mBluetoothAdapter;
+//    private List<BluetoothDevice> bluetoothDevices = new ArrayList<BluetoothDevice>();
+
+//    private void intHandle() {
+//        mHandler = new ZizhuHandler(this);
+//        mHandler.setOnHandlerListener(new ZizhuHandler.OnHandlerListener() {
+//            @Override
+//            public void handler(Message msg) {
+//
+//            }
+//        });
+//    }
+//
+//    private void scanLeDevice() {
+//        mBluetoothAdapter.startLeScan(mLeScanCallback);
+//    }
+//
+//    private void openBluetooth() {
+//        //判断手机是否支持蓝牙4.0
+//        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+//            Toast.makeText(this, "不支持蓝牙", Toast.LENGTH_SHORT).show();
+//            finish();
+//        }
+//        final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+//        mBluetoothAdapter = bluetoothManager.getAdapter();
+//        if (mBluetoothAdapter == null) {
+//            Toast.makeText(this, "不支持蓝牙", Toast.LENGTH_SHORT).show();
+//            finish();
+//            return;
+//        }
+//        //开启蓝牙
+//        if(!mBluetoothAdapter.isEnabled())
+//            mBluetoothAdapter.enable();
+//        intHandle();
+//        mBLE = new BluetoothLeClass(this, mHandler);
+//        if (!mBLE.initialize()) {
+//            finish();
+//        }
+//        mBLE.setOnDisconnectListener(onConnectListener);
+//        scanLeDevice();
+//    }
+//
+//    private BluetoothAdapter.LeScanCallback mLeScanCallback =  new BluetoothAdapter.LeScanCallback() {
+//
+//        @Override
+//        public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
+//            if (!TextUtils.isEmpty(device.getName())) {
+//                if (device.getName().startsWith("RW")) {
+//                    byte[] array = ParseLeAdvData.adv_report_parse(ParseLeAdvData.BLE_GAP_AD_TYPE_SERVICE_DATA, scanRecord);
+//                    Log.i("json", "array:" + Utils.bytesToHexString(array));
+//                    if(!TextUtils.isEmpty(Utils.bytesToHexString(array))){
+//                        Log.i("json", Utils.bytesToHexString(array).toUpperCase() + "");
+//                        if(BaseApplication.getInstance().getCurrentIndex() == 2) {
+//                            if (Utils.bytesToHexString(array).toLowerCase().indexOf("01ffff00") != -1) {
+//                                ((SelfTakeFragment)currentFragment).takePicture(new EventModel("take", array));
+//                                mBluetoothAdapter.stopLeScan(mLeScanCallback);
+//                            }
+//                        }else{
+//                            if (Utils.bytesToHexString(array).toLowerCase().indexOf("01ffff00") == -1) {
+//                                EventBus.getDefault().post(new EventModel("read", array));
+//                                mBluetoothAdapter.stopLeScan(mLeScanCallback);
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//            if(!bluetoothDevices.contains(device)) {
+//                bluetoothDevices.add(device);
+//                if (!TextUtils.isEmpty(device.getName())) {
+//                    if (device.getName().startsWith("RW")) {
+//                        bluetoothDevice = device;
+//                        mBLE.connect(device.getAddress());
+//                    }
+//                }
+//            }
+//        }
+//    };
+//
+//    private BluetoothLeClass.OnDisconnectListener onConnectListener = new BluetoothLeClass.OnDisconnectListener() {
+//        @Override
+//        public void onDisconnect(BluetoothGatt gatt) {
+//            bluetoothDevices.clear();
+//            scanLeDevice();
+//            mBLE.connect(bluetoothDevice.getAddress());
+//        }
+//
+//    };
+//
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        if(mBLE != null) {
+//            mBLE.disconnect();
+//            mBLE.close();
+//        }
+//    }
