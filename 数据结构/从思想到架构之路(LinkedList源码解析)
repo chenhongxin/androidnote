@@ -217,13 +217,20 @@ class Node<E> {
 }
 
 public static void main(String[] args) {
+	Node<String> last = null;
+	Node<String> node1 = new Node<String>(last, "a", null);
+	last = node1;
+	Node<String> node2 = new Node<String>(last, "b", null);
+	last.next = node2;
+	last = node2;
+
 	LinkedArray<String> linkedArray = new LinkedArray<>();
 	linkedArray.add("a");
 	linkedArray.add("b");
 	linkedArray.add("c");
 	linkedArray.add("d");
 }
-上面的例子你们可以调试一下，一个链表是如何连接起来的，我们也可以联想：假如删除元素我们要怎么删除，遍历一个集合我们又该怎么做，那么接下来我们来讲删除和遍历
+上面的例子你们可以调试一下，首先是手动创建节点，先创建尾节点为null，创建新节点，让新创建的节点的prev前一个节点，第二次创建了新节点之后让新节点的上一个尾节点的下一个节点指向该新节点，最后last = node2让新节点赋给最后一个节点，下面是教你一个链表是如何连接起来的，我们也可以联想：假如删除元素我们要怎么删除，遍历一个集合我们又该怎么做，那么接下来我们来讲删除和遍历
 
 删除一个节点：
 public E removeFirst() {
@@ -273,21 +280,13 @@ private E unlinkLast(Node<E> l) {
     return element;
 }
 
-<<<<<<< HEAD
-删除一个节点，假如你要删除一个节点你会怎么做，有三个节点，a、b、c，我们删除a，由于a没有前一个，所以 获取节点的上一个和下一个节点，判断当前节点是首节点或最后节点，如果是首节点，那么把下一个节点直接覆盖首节点，如果是尾节点，那么把前一个节点赋给最后节点，下面我给一张图让你们瞧瞧：
-
-插图
-
-
-=======
 删除一个节点，假如你要删除一个节点你会怎么做，有三个节点，a、b、c，我们删除a，由于a没有前一个，所以 获取节点的上一个和下一个节点，判断当前节点是首节点或最后节点，如果是首节点，那么把下一个节点直接覆盖首节点，如果是尾节点，那么把前一个节点赋给最后节点，下面是我通过自己写的数组截的图:
 
 插图
 
-由上图我们了解到a节点的前一个节点是null，还有c节点的next是null，那么我们删除的节点如果是最后或第一个元素的话就直接
-first = next，last = prev，明白意思吧，如果不明白我们回想System.arrayCopy，删除实际上就是把节点的下一个元素往前移动还有把下一个
->>>>>>> 8f607032381a1584c74deaf56b7a4a424c0853b2
+由上图我们了解到a节点的前一个节点是null，还有c节点的next是null，那么我们删除的节点如果是最后或第一个元素的话就直接first = next，last = prev，明白意思吧，如果不明白我们回想System.arrayCopy，删除实际上就是把节点的下一个元素往前移动还有把上一个元素往后移动一位，你可以看上图的第一个元素和最后一个元素的prev和next元素，是不是null.如果非首节点和尾节点，可以看以下的图片：
 
+插图
 E unlink(Node<E> x) {
     // assert x != null;
     final E element = x.item;
@@ -314,10 +313,123 @@ E unlink(Node<E> x) {
     return element;
 }
 
+查询包含一个元素，跟ArrayList查询是否包含元素一样，查询到之后就直接返回
+public boolean contains(Object o) {
+    return indexOf(o) != -1;
+}
 
+public int indexOf(Object o) {
+    int index = 0;
+    if (o == null) {
+        for (Node<E> x = first; x != null; x = x.next) {
+            if (x.item == null)
+                return index;
+            index++;
+        }
+    } else {
+        for (Node<E> x = first; x != null; x = x.next) {
+            if (o.equals(x.item))
+                return index;
+            index++;
+        }
+    }
+    return -1;
+}
 
+假如我们要移除某个对象，也是一样要搜索是否包含某个对象，如果搜索到之后就用我上面说的unlink方法进行移除对象
+public boolean remove(Object o) {
+    if (o == null) {
+        for (Node<E> x = first; x != null; x = x.next) {
+            if (x.item == null) {
+                unlink(x);
+                return true;
+            }
+        }
+    } else {
+        for (Node<E> x = first; x != null; x = x.next) {
+            if (o.equals(x.item)) {
+                unlink(x);
+                return true;
+            }
+        }
+    }
+    return false;
+}
 
+接下来我们来添加一个集合，如果我们添加一个集合，我们会如何做呢？首先要获取到该集合的数组对象，然后遍历集合，将集合以链表模式添加至最后节点或某位置，如果我们添加至size最后节点，也就是调用addAll(Collection<? extends E> c)方法，创建预备节点为尾节点pred = last，然后遍历数组进行链表连接，Node<E> newNode = new Node<>(pred, e, null)，跟之前添加节点类似，所以这里就不说了
+for (Object o : a) {
+    E e = (E) o;
+    Node<E> newNode = new Node<>(pred, e, null);
+    if (pred == null)
+        first = newNode;
+    else
+        pred.next = newNode;
+    pred = newNode;
+}
+完成添加节点之后需要做什么呢？把添加的节点连接至尾节点last = pred，最后size += numNew。
+如果添加的节点是从某位置开始添加的
+succ = node(index);
+pred = succ.prev;
+获取该添加的位置的节点，
 
+public boolean addAll(Collection<? extends E> c) {
+    return addAll(size, c);
+}
+
+public boolean addAll(int index, Collection<? extends E> c) {
+    checkPositionIndex(index);
+
+    Object[] a = c.toArray();
+    int numNew = a.length;
+    if (numNew == 0)
+        return false;
+
+    Node<E> pred, succ;
+    if (index == size) {
+        succ = null;
+        pred = last;
+    } else {
+        succ = node(index);
+        pred = succ.prev;
+    }
+
+    for (Object o : a) {
+        @SuppressWarnings("unchecked") E e = (E) o;
+        Node<E> newNode = new Node<>(pred, e, null);
+        if (pred == null)
+            first = newNode;
+        else
+            pred.next = newNode;
+        pred = newNode;
+    }
+
+    if (succ == null) {
+        last = pred;
+    } else {
+        pred.next = succ;
+        succ.prev = pred;
+    }
+
+    size += numNew;
+    modCount++;
+    return true;
+}
+
+Node<E> node(int index) {
+    // assert isElementIndex(index);
+
+    if (index < (size >> 1)) {
+        Node<E> x = first;
+        for (int i = 0; i < index; i++)
+            x = x.next;
+        return x;
+    } else {
+        Node<E> x = last;
+        for (int i = size - 1; i > index; i--)
+            x = x.prev;
+        return x;
+    }
+}
 
 
 
